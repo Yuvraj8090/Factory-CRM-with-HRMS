@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('invoice_number')->unique();
             $table->date('invoice_date')->index();
             $table->foreignId('customer_id')->constrained()->restrictOnDelete();
-            $table->foreignId('quotation_id')->nullable()->constrained()->nullOnDelete();
+            $table->unsignedBigInteger('quotation_id')->nullable()->index();
             $table->decimal('subtotal', 15, 2)->default(0);
             $table->string('discount_type', 20)->nullable();
             $table->decimal('discount_value', 15, 2)->default(0);

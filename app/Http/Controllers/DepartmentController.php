@@ -3,63 +3,62 @@
 namespace App\Http\Controllers;
 
 use App\Models\Department;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        //
+        $departments = Department::withCount(['designations', 'employees'])
+            ->when($request->boolean('active_only'), fn ($query) => $query->active())
+            ->orderBy('name')
+            ->paginate($request->integer('per_page', 15));
+
+        return response()->json($departments);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): JsonResponse
     {
-        //
+        return response()->json(['message' => 'Department form metadata ready.']);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        //
+        $department = Department::create($request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:departments,name'],
+            'description' => ['nullable', 'string'],
+            'is_active' => ['required', 'boolean'],
+        ]));
+
+        return response()->json($department, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Department $department)
+    public function show(Department $department): JsonResponse
     {
-        //
+        return response()->json($department->load(['designations', 'employees']));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Department $department)
+    public function edit(Department $department): JsonResponse
     {
-        //
+        return response()->json($department);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Department $department)
+    public function update(Request $request, Department $department): JsonResponse
     {
-        //
+        $department->update($request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:departments,name,' . $department->id],
+            'description' => ['nullable', 'string'],
+            'is_active' => ['required', 'boolean'],
+        ]));
+
+        return response()->json($department->fresh());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Department $department)
+    public function destroy(Department $department): JsonResponse
     {
-        //
+        $department->delete();
+
+        return response()->json(['message' => 'Department deleted successfully.']);
     }
 }

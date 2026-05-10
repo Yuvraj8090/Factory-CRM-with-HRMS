@@ -29,8 +29,6 @@ class Attendance extends Model
     {
         return [
             'date' => 'date',
-            'check_in' => 'datetime:H:i',
-            'check_out' => 'datetime:H:i',
             'work_hours' => 'decimal:2',
             'overtime_hours' => 'decimal:2',
         ];

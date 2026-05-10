@@ -2,64 +2,67 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Department;
 use App\Models\Designation;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DesignationController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        //
+        $designations = Designation::with(['department', 'employees'])
+            ->when($request->filled('department_id'), fn ($query) => $query->where('department_id', $request->integer('department_id')))
+            ->orderBy('name')
+            ->paginate($request->integer('per_page', 15));
+
+        return response()->json($designations);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): JsonResponse
     {
-        //
+        return response()->json([
+            'departments' => Department::active()->select('id', 'name')->orderBy('name')->get(),
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        //
+        $designation = Designation::create($request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'department_id' => ['required', 'exists:departments,id'],
+        ]));
+
+        return response()->json($designation->load('department'), 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Designation $designation)
+    public function show(Designation $designation): JsonResponse
     {
-        //
+        return response()->json($designation->load(['department', 'employees']));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Designation $designation)
+    public function edit(Designation $designation): JsonResponse
     {
-        //
+        return response()->json([
+            'designation' => $designation->load('department'),
+            'departments' => Department::active()->select('id', 'name')->orderBy('name')->get(),
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Designation $designation)
+    public function update(Request $request, Designation $designation): JsonResponse
     {
-        //
+        $designation->update($request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'department_id' => ['required', 'exists:departments,id'],
+        ]));
+
+        return response()->json($designation->fresh()->load('department'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Designation $designation)
+    public function destroy(Designation $designation): JsonResponse
     {
-        //
+        $designation->delete();
+
+        return response()->json(['message' => 'Designation deleted successfully.']);
     }
 }

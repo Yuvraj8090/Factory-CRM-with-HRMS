@@ -3,63 +3,68 @@
 namespace App\Http\Controllers;
 
 use App\Models\WhatsAppTemplate;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class WhatsAppTemplateController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        //
+        $templates = WhatsAppTemplate::withCount('messages')
+            ->when($request->boolean('active_only'), fn ($query) => $query->active())
+            ->orderBy('template_name')
+            ->paginate($request->integer('per_page', 15));
+
+        return response()->json($templates);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): JsonResponse
     {
-        //
+        return response()->json([
+            'categories' => ['Marketing', 'Utility', 'Authentication', 'Transactional'],
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        //
+        $template = WhatsAppTemplate::create($request->validate([
+            'template_name' => ['required', 'string', 'max:255', 'unique:whats_app_templates,template_name'],
+            'template_id' => ['required', 'string', 'max:255', 'unique:whats_app_templates,template_id'],
+            'category' => ['nullable', 'string', 'max:255'],
+            'variables' => ['nullable', 'array'],
+            'is_active' => ['required', 'boolean'],
+        ]));
+
+        return response()->json($template, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(WhatsAppTemplate $whatsAppTemplate)
+    public function show(WhatsAppTemplate $whatsAppTemplate): JsonResponse
     {
-        //
+        return response()->json($whatsAppTemplate->load('messages'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(WhatsAppTemplate $whatsAppTemplate)
+    public function edit(WhatsAppTemplate $whatsAppTemplate): JsonResponse
     {
-        //
+        return response()->json($whatsAppTemplate);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, WhatsAppTemplate $whatsAppTemplate)
+    public function update(Request $request, WhatsAppTemplate $whatsAppTemplate): JsonResponse
     {
-        //
+        $whatsAppTemplate->update($request->validate([
+            'template_name' => ['required', 'string', 'max:255', 'unique:whats_app_templates,template_name,' . $whatsAppTemplate->id],
+            'template_id' => ['required', 'string', 'max:255', 'unique:whats_app_templates,template_id,' . $whatsAppTemplate->id],
+            'category' => ['nullable', 'string', 'max:255'],
+            'variables' => ['nullable', 'array'],
+            'is_active' => ['required', 'boolean'],
+        ]));
+
+        return response()->json($whatsAppTemplate->fresh());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(WhatsAppTemplate $whatsAppTemplate)
+    public function destroy(WhatsAppTemplate $whatsAppTemplate): JsonResponse
     {
-        //
+        $whatsAppTemplate->delete();
+
+        return response()->json(['message' => 'WhatsApp template deleted successfully.']);
     }
 }

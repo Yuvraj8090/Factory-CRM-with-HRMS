@@ -23,10 +23,18 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::table('debit_note_items', function (Blueprint $table) {
+            $table->foreign('debit_note_id')->references('id')->on('debit_notes')->cascadeOnDelete();
+        });
     }
 
     public function down(): void
     {
+        Schema::table('debit_note_items', function (Blueprint $table) {
+            $table->dropForeign(['debit_note_id']);
+        });
+
         Schema::dropIfExists('debit_notes');
     }
 };

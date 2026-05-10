@@ -16,10 +16,18 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::table('leave_requests', function (Blueprint $table) {
+            $table->foreign('leave_type_id')->references('id')->on('leave_types')->restrictOnDelete();
+        });
     }
 
     public function down(): void
     {
+        Schema::table('leave_requests', function (Blueprint $table) {
+            $table->dropForeign(['leave_type_id']);
+        });
+
         Schema::dropIfExists('leave_types');
     }
 };

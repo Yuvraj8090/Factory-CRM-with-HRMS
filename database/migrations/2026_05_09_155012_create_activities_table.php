@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('activities', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('lead_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('lead_id')->index();
             $table->foreignId('activity_type_id')->constrained()->restrictOnDelete();
             $table->foreignId('activity_status_id')->constrained()->restrictOnDelete();
             $table->foreignId('assigned_to')->nullable()->constrained('users')->nullOnDelete();

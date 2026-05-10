@@ -3,63 +3,61 @@
 namespace App\Http\Controllers;
 
 use App\Models\LeaveType;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class LeaveTypeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        //
+        return response()->json(
+            LeaveType::withCount('leaveRequests')
+                ->orderBy('name')
+                ->paginate($request->integer('per_page', 15))
+        );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function create(): JsonResponse
     {
-        //
+        return response()->json(['message' => 'Leave type form metadata ready.']);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        //
+        $leaveType = LeaveType::create($request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:leave_types,name'],
+            'leave_days_per_year' => ['required', 'integer', 'min:0'],
+            'is_paid' => ['required', 'boolean'],
+        ]));
+
+        return response()->json($leaveType, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(LeaveType $leaveType)
+    public function show(LeaveType $leaveType): JsonResponse
     {
-        //
+        return response()->json($leaveType->load('leaveRequests'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(LeaveType $leaveType)
+    public function edit(LeaveType $leaveType): JsonResponse
     {
-        //
+        return response()->json($leaveType);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, LeaveType $leaveType)
+    public function update(Request $request, LeaveType $leaveType): JsonResponse
     {
-        //
+        $leaveType->update($request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:leave_types,name,' . $leaveType->id],
+            'leave_days_per_year' => ['required', 'integer', 'min:0'],
+            'is_paid' => ['required', 'boolean'],
+        ]));
+
+        return response()->json($leaveType->fresh());
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(LeaveType $leaveType)
+    public function destroy(LeaveType $leaveType): JsonResponse
     {
-        //
+        $leaveType->delete();
+
+        return response()->json(['message' => 'Leave type deleted successfully.']);
     }
 }

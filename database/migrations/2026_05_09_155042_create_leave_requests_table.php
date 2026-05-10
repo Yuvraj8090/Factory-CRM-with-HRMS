@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('leave_requests', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('leave_type_id')->constrained()->restrictOnDelete();
+            $table->unsignedBigInteger('leave_type_id')->index();
             $table->date('start_date')->index();
             $table->date('end_date')->index();
             $table->decimal('total_days', 8, 2)->default(0);

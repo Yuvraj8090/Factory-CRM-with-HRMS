@@ -30,10 +30,18 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::table('activities', function (Blueprint $table) {
+            $table->foreign('lead_id')->references('id')->on('leads')->cascadeOnDelete();
+        });
     }
 
     public function down(): void
     {
+        Schema::table('activities', function (Blueprint $table) {
+            $table->dropForeign(['lead_id']);
+        });
+
         Schema::dropIfExists('leads');
     }
 };

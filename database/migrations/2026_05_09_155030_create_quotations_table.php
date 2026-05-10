@@ -27,10 +27,26 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::table('invoices', function (Blueprint $table) {
+            $table->foreign('quotation_id')->references('id')->on('quotations')->nullOnDelete();
+        });
+
+        Schema::table('quotation_items', function (Blueprint $table) {
+            $table->foreign('quotation_id')->references('id')->on('quotations')->cascadeOnDelete();
+        });
     }
 
     public function down(): void
     {
+        Schema::table('quotation_items', function (Blueprint $table) {
+            $table->dropForeign(['quotation_id']);
+        });
+
+        Schema::table('invoices', function (Blueprint $table) {
+            $table->dropForeign(['quotation_id']);
+        });
+
         Schema::dropIfExists('quotations');
     }
 };
