@@ -7,33 +7,38 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Payment extends Model
+class WhatsAppMessage extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'payment_number',
-        'payment_date',
-        'invoice_id',
+        'template_id',
+        'lead_id',
         'customer_id',
-        'amount',
-        'payment_method',
-        'reference_number',
-        'notes',
+        'phone',
+        'message_body',
+        'status',
+        'sent_at',
+        'response_payload',
         'created_by',
     ];
 
     protected function casts(): array
     {
         return [
-            'payment_date' => 'date',
-            'amount' => 'decimal:2',
+            'sent_at' => 'datetime',
+            'response_payload' => 'array',
         ];
     }
 
-    public function invoice(): BelongsTo
+    public function template(): BelongsTo
     {
-        return $this->belongsTo(Invoice::class);
+        return $this->belongsTo(WhatsAppTemplate::class, 'template_id');
+    }
+
+    public function lead(): BelongsTo
+    {
+        return $this->belongsTo(Lead::class);
     }
 
     public function customer(): BelongsTo

@@ -6,20 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('debit_notes', function (Blueprint $table) {
             $table->id();
+            $table->string('debit_note_number')->unique();
+            $table->date('debit_note_date')->index();
+            $table->foreignId('invoice_id')->constrained()->restrictOnDelete();
+            $table->foreignId('customer_id')->constrained()->restrictOnDelete();
+            $table->text('reason')->nullable();
+            $table->decimal('subtotal', 15, 2)->default(0);
+            $table->decimal('tax_amount', 15, 2)->default(0);
+            $table->decimal('total', 15, 2)->default(0);
+            $table->string('status')->default('Open')->index();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('debit_notes');

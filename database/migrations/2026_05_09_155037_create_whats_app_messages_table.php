@@ -8,16 +8,16 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('email_logs', function (Blueprint $table) {
+        Schema::create('whats_app_messages', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('template_id')->nullable()->constrained('whats_app_templates')->nullOnDelete();
             $table->foreignId('lead_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('customer_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('subject');
-            $table->longText('body');
-            $table->string('sent_to')->index();
+            $table->string('phone', 20)->nullable()->index();
+            $table->longText('message_body')->nullable();
+            $table->string('status')->default('Queued')->index();
             $table->timestamp('sent_at')->nullable()->index();
-            $table->string('status')->default('Pending')->index();
-            $table->text('error_message')->nullable();
+            $table->json('response_payload')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
             $table->softDeletes();
@@ -26,6 +26,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('email_logs');
+        Schema::dropIfExists('whats_app_messages');
     }
 };
