@@ -56,7 +56,7 @@
     }"
     class="space-y-6"
 >
-    <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+    <section class="app-card app-card-body">
         <div class="border-b border-slate-200 pb-5">
             <h2 class="text-lg font-bold text-slate-950">Invoice Header</h2>
             <p class="mt-1 text-sm text-slate-500">Define customer, billing dates, and commercial status before itemized GST calculation.</p>
@@ -76,17 +76,17 @@
         </div>
     </section>
 
-    <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+    <section class="app-card app-card-body">
         <div class="flex items-center justify-between border-b border-slate-200 pb-5">
             <div>
                 <h2 class="text-lg font-bold text-slate-950">Invoice Items</h2>
                 <p class="mt-1 text-sm text-slate-500">Line-level GST inputs drive the final invoice value and intra/inter-state split.</p>
             </div>
-            <button type="button" @click="addRow()" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Add Row</button>
+            <button type="button" @click="addRow()" class="btn btn-outline-secondary btn-sm">Add Row</button>
         </div>
 
         <div class="mt-6 overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
+            <table class="table table-hover app-data-table text-sm">
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                     <tr><th class="px-4 py-3">Item</th><th class="px-4 py-3">HSN</th><th class="px-4 py-3">Qty</th><th class="px-4 py-3">Unit</th><th class="px-4 py-3">Rate</th><th class="px-4 py-3">GST %</th><th class="px-4 py-3">Description</th><th class="px-4 py-3"></th></tr>
                 </thead>
@@ -121,16 +121,16 @@
         @endif
     </section>
 
-    <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+    <section class="app-card app-card-body">
         <div class="grid gap-4 sm:grid-cols-3">
-            <div class="rounded-2xl bg-slate-50 px-4 py-4"><p class="text-xs uppercase tracking-[0.16em] text-slate-500">Subtotal</p><p class="mt-2 text-lg font-bold text-slate-950">₹<span x-text="subtotal().toFixed(2)"></span></p></div>
-            <div class="rounded-2xl bg-slate-50 px-4 py-4"><p class="text-xs uppercase tracking-[0.16em] text-slate-500">Tax Amount</p><p class="mt-2 text-lg font-bold text-slate-950">₹<span x-text="taxAmount().toFixed(2)"></span></p></div>
-            <div class="rounded-2xl bg-slate-50 px-4 py-4"><p class="text-xs uppercase tracking-[0.16em] text-slate-500">Projected Total</p><p class="mt-2 text-lg font-bold text-slate-950">₹<span x-text="grandTotal().toFixed(2)"></span></p></div>
+            <div class="app-surface px-4 py-4"><p class="text-xs uppercase tracking-[0.16em] text-slate-500">Subtotal</p><p class="mt-2 text-lg font-bold text-slate-950">₹<span x-text="subtotal().toFixed(2)"></span></p></div>
+            <div class="app-surface px-4 py-4"><p class="text-xs uppercase tracking-[0.16em] text-slate-500">Tax Amount</p><p class="mt-2 text-lg font-bold text-slate-950">₹<span x-text="taxAmount().toFixed(2)"></span></p></div>
+            <div class="app-surface px-4 py-4"><p class="text-xs uppercase tracking-[0.16em] text-slate-500">Projected Total</p><p class="mt-2 text-lg font-bold text-slate-950">₹<span x-text="grandTotal().toFixed(2)"></span></p></div>
         </div>
     </section>
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('finance.invoices.index') }}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Cancel</a>
-        <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">{{ $invoice ? 'Update Invoice' : 'Save Invoice' }}</button>
+        <a href="{{ route('finance.invoices.index') }}" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">{{ $invoice ? 'Update Invoice' : 'Save Invoice' }}</button>
     </div>
 </div>

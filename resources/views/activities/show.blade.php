@@ -13,7 +13,7 @@
     </x-slot>
 
     <div class="grid gap-6 xl:grid-cols-[minmax(0,1.7fr)_380px]">
-        <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+        <section class="app-card app-card-body">
             <div class="grid gap-6 md:grid-cols-2">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Lead</p>

@@ -1,6 +1,6 @@
 @php($item = $item ?? $itemMaster ?? $item_master ?? null)
 <div class="space-y-6">
-    <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+    <section class="app-card app-card-body">
         <div class="border-b border-slate-200 pb-5">
             <h2 class="text-lg font-bold text-slate-950">Item Master Details</h2>
             <p class="mt-1 text-sm text-slate-500">Store the commercial and tax-ready definition of each sellable or billable product in one dependable master record.</p>
@@ -21,7 +21,7 @@
         </div>
     </section>
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('settings.item-masters.index') }}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Cancel</a>
-        <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">{{ $item ? 'Update Item' : 'Save Item' }}</button>
+        <a href="{{ route('settings.item-masters.index') }}" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">{{ $item ? 'Update Item' : 'Save Item' }}</button>
     </div>
 </div>

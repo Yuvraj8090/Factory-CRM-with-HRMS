@@ -3,16 +3,16 @@
         <x-crud.page-header eyebrow="Finance Workspace" title="Invoices" description="Monitor billing output, GST-ready totals, and collection status from one finance control board." :action-url="route('finance.invoices.create')" action-label="Create Invoice" />
     </x-slot>
 
-    <section class="rounded-3xl border border-white/70 bg-white shadow-sm shadow-slate-200/60">
+    <section class="app-card">
         <form method="GET" class="grid gap-4 border-b border-slate-200 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_220px_220px_auto]">
             <div><x-input-label for="search" value="Search" /><x-text-input id="search" name="search" type="text" class="mt-2 block w-full rounded-2xl border-slate-200" :value="request('search')" placeholder="Invoice or customer..." /></div>
             <div><x-input-label for="invoice_status" value="Invoice Status" /><select id="invoice_status" name="invoice_status" class="mt-2 block w-full rounded-2xl border-slate-200 text-sm shadow-sm"><option value="">All invoice statuses</option>@foreach ($invoiceStatuses as $status)<option value="{{ $status }}" @selected(request('invoice_status') === $status)>{{ $status }}</option>@endforeach</select></div>
             <div><x-input-label for="payment_status" value="Payment Status" /><select id="payment_status" name="payment_status" class="mt-2 block w-full rounded-2xl border-slate-200 text-sm shadow-sm"><option value="">All payment statuses</option>@foreach ($paymentStatuses as $status)<option value="{{ $status }}" @selected(request('payment_status') === $status)>{{ $status }}</option>@endforeach</select></div>
-            <div class="flex items-end"><button type="submit" class="inline-flex w-full items-center justify-center rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Apply</button></div>
+            <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">Apply</button></div>
         </form>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
+            <table class="table table-hover app-data-table text-sm">
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"><tr><th class="px-6 py-4">Invoice</th><th class="px-6 py-4">Customer</th><th class="px-6 py-4">Due Date</th><th class="px-6 py-4">Invoice Status</th><th class="px-6 py-4">Payment Status</th><th class="px-6 py-4">Total</th><th class="px-6 py-4 text-right">Actions</th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($invoices as $invoice)
@@ -23,7 +23,7 @@
                             <td class="px-6 py-5"><x-crud.status-badge :value="$invoice->invoice_status" /></td>
                             <td class="px-6 py-5"><x-crud.status-badge :value="$invoice->payment_status" /></td>
                             <td class="px-6 py-5 text-slate-600">₹{{ number_format((float) $invoice->total, 2) }}</td>
-                            <td class="px-6 py-5"><div class="flex justify-end gap-2"><a href="{{ route('finance.invoices.show', $invoice) }}" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">View</a><a href="{{ route('finance.invoices.edit', $invoice) }}" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">Edit</a></div></td>
+                            <td class="px-6 py-5"><div class="flex justify-end gap-2"><a href="{{ route('finance.invoices.show', $invoice) }}" class="btn btn-outline-secondary btn-sm">View</a><a href="{{ route('finance.invoices.edit', $invoice) }}" class="btn btn-outline-secondary btn-sm">Edit</a></div></td>
                         </tr>
                     @empty
                         <tr><td colspan="7" class="px-6 py-16 text-center text-sm text-slate-500">No invoices matched the current filters.</td></tr>

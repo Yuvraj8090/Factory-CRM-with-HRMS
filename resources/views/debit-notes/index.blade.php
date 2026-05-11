@@ -2,9 +2,9 @@
     <x-slot name="header">
         <x-crud.page-header title="Debit Notes" description="Manage debit adjustments, invoice-linked corrections, and customer charge recoveries from one controlled register." icon="document" :breadcrumbs="[['label' => 'Finance'], ['label' => 'Debit Notes']]" :action-url="route('finance.debit-notes.create')" action-label="Create Debit Note" />
     </x-slot>
-    <section class="rounded-3xl border border-white/70 bg-white shadow-sm shadow-slate-200/60">
+    <section class="app-card">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
+            <table class="table table-hover app-data-table text-sm">
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"><tr><th class="px-6 py-4">Debit Note</th><th class="px-6 py-4">Customer</th><th class="px-6 py-4">Invoice</th><th class="px-6 py-4">Status</th><th class="px-6 py-4">Total</th><th class="px-6 py-4 text-right">Actions</th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($debitNotes as $debitNote)
@@ -14,7 +14,7 @@
                             <td class="px-6 py-5 text-slate-600">{{ $debitNote->invoice?->invoice_number ?: 'No linked invoice' }}</td>
                             <td class="px-6 py-5"><x-crud.status-badge :value="$debitNote->status ?: 'Open'" /></td>
                             <td class="px-6 py-5 text-slate-600">₹{{ number_format((float) $debitNote->total, 2) }}</td>
-                            <td class="px-6 py-5"><div class="flex justify-end gap-2"><a href="{{ route('finance.debit-notes.show', $debitNote) }}" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">View</a><a href="{{ route('finance.debit-notes.edit', $debitNote) }}" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">Edit</a></div></td>
+                            <td class="px-6 py-5"><div class="flex justify-end gap-2"><a href="{{ route('finance.debit-notes.show', $debitNote) }}" class="btn btn-outline-secondary btn-sm">View</a><a href="{{ route('finance.debit-notes.edit', $debitNote) }}" class="btn btn-outline-secondary btn-sm">Edit</a></div></td>
                         </tr>
                     @empty
                         <tr><td colspan="6" class="px-6 py-16 text-center text-sm text-slate-500">No debit notes are available yet.</td></tr>

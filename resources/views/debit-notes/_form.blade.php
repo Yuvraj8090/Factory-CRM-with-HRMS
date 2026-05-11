@@ -9,7 +9,7 @@
 @endphp
 
 <div class="space-y-6">
-    <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+    <section class="app-card app-card-body">
         <div class="border-b border-slate-200 pb-5">
             <h2 class="text-lg font-bold text-slate-950">Debit Note Header</h2>
             <p class="mt-1 text-sm text-slate-500">Document a debit adjustment with the affected customer, invoice reference, and commercial reason clearly stated.</p>
@@ -24,14 +24,14 @@
         </div>
     </section>
 
-    <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+    <section class="app-card app-card-body">
         <div class="border-b border-slate-200 pb-5">
             <h2 class="text-lg font-bold text-slate-950">Adjustment Lines</h2>
             <p class="mt-1 text-sm text-slate-500">Capture the items or ad hoc adjustments contributing to the debit note so totals remain auditable.</p>
         </div>
         <div class="mt-6 space-y-5">
             @foreach ($lineItems as $index => $lineItem)
-                <div class="grid gap-4 rounded-2xl border border-slate-200 p-4 lg:grid-cols-4">
+                <div class="grid gap-4 app-panel p-4 lg:grid-cols-4">
                     <div class="lg:col-span-2"><x-input-label :for="'items_'.$index.'_item_id'" value="Item" /><select id="items_{{ $index }}_item_id" name="items[{{ $index }}][item_id]" class="mt-2 block w-full rounded-2xl border-slate-200 text-sm shadow-sm"><option value="">Ad hoc adjustment</option>@foreach ($items as $item)<option value="{{ $item->id }}" @selected((string) ($lineItem['item_id'] ?? '') === (string) $item->id)>{{ $item->item_name }}</option>@endforeach</select></div>
                     <div><x-input-label :for="'items_'.$index.'_quantity'" value="Quantity" /><x-text-input :id="'items_'.$index.'_quantity'" name="items[{{ $index }}][quantity]" type="number" step="0.01" class="mt-2 block w-full rounded-2xl border-slate-200" :value="$lineItem['quantity'] ?? 1" /></div>
                     <div><x-input-label :for="'items_'.$index.'_unit_price'" value="Unit Price" /><x-text-input :id="'items_'.$index.'_unit_price'" name="items[{{ $index }}][unit_price]" type="number" step="0.01" class="mt-2 block w-full rounded-2xl border-slate-200" :value="$lineItem['unit_price'] ?? 0" /></div>
@@ -42,7 +42,7 @@
     </section>
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('finance.debit-notes.index') }}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Cancel</a>
-        <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">{{ $debitNote ? 'Update Debit Note' : 'Save Debit Note' }}</button>
+        <a href="{{ route('finance.debit-notes.index') }}" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">{{ $debitNote ? 'Update Debit Note' : 'Save Debit Note' }}</button>
     </div>
 </div>

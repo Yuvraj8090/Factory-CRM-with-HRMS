@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <x-crud.page-header eyebrow="HRMS Workspace" :title="($attendance->employeeUser?->name ?? 'Attendance Record')" description="Attendance detail with computed work and overtime hours for the selected shift." :back-url="route('hrms.attendances.index')" back-label="Back to Attendance">
-            <a href="{{ route('hrms.attendances.edit', $attendance) }}" class="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Edit Attendance</a>
+            <a href="{{ route('hrms.attendances.edit', $attendance) }}" class="btn btn-primary">Edit Attendance</a>
         </x-crud.page-header>
     </x-slot>
 
-    <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+    <section class="app-card app-card-body">
         <div class="grid gap-6 lg:grid-cols-2">
             <div><p class="text-xs uppercase tracking-[0.18em] text-slate-500">Employee</p><p class="mt-2 text-lg font-semibold text-slate-950">{{ $attendance->employeeUser?->name ?? 'Unknown user' }}</p></div>
             <div><p class="text-xs uppercase tracking-[0.18em] text-slate-500">Status</p><div class="mt-2"><x-crud.status-badge :value="$attendance->status" /></div></div>

@@ -23,7 +23,7 @@
     @endphp
 
     <div class="space-y-6">
-        <section class="overflow-hidden rounded-3xl border border-white/70 bg-white shadow-sm shadow-slate-200/60">
+        <section class="overflow-hidden app-card">
             <div class="flex flex-col gap-4 border-b border-slate-200 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
                 <div>
                     <h2 class="text-lg font-bold text-slate-950">Lead Pipeline Register</h2>
@@ -32,15 +32,15 @@
                     </p>
                 </div>
                 <div class="grid gap-3 sm:grid-cols-3">
-                    <div class="rounded-2xl bg-slate-50 px-4 py-3">
+                    <div class="app-surface px-4 py-3">
                         <p class="text-xs uppercase tracking-[0.16em] text-slate-500">Open Leads</p>
                         <p class="mt-2 text-xl font-bold text-slate-950">{{ $leads->where('is_converted', false)->count() }}</p>
                     </div>
-                    <div class="rounded-2xl bg-slate-50 px-4 py-3">
+                    <div class="app-surface px-4 py-3">
                         <p class="text-xs uppercase tracking-[0.16em] text-slate-500">Qualified</p>
                         <p class="mt-2 text-xl font-bold text-slate-950">{{ $leads->filter(fn ($lead) => optional($lead->stage)->name === 'Qualified')->count() }}</p>
                     </div>
-                    <div class="rounded-2xl bg-slate-50 px-4 py-3">
+                    <div class="app-surface px-4 py-3">
                         <p class="text-xs uppercase tracking-[0.16em] text-slate-500">Converted</p>
                         <p class="mt-2 text-xl font-bold text-slate-950">{{ $leads->where('is_converted', true)->count() }}</p>
                     </div>
@@ -48,7 +48,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <table class="table table-hover app-data-table text-sm">
                     <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                         <tr>
                             <th class="px-6 py-4">Lead</th>

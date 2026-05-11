@@ -20,13 +20,13 @@
                 <p class="mt-2 text-sm text-slate-600">{{ $lead->company_name ?: 'Individual Buyer' }}</p>
             </div>
             <div class="flex flex-col gap-3 sm:flex-row">
-                <a href="{{ route('crm.leads.edit', $lead) }}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                <a href="{{ route('crm.leads.edit', $lead) }}" class="btn btn-outline-secondary">
                     Edit Lead
                 </a>
                 @if (! $lead->is_converted)
                     <form action="{{ route('crm.leads.convert', $lead) }}" method="POST">
                         @csrf
-                        <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-300/40 transition hover:from-emerald-600 hover:to-teal-600">
+                        <button type="submit" class="btn btn-success">
                             Convert to Customer
                         </button>
                     </form>
@@ -41,7 +41,7 @@
 
     <div class="grid gap-6 xl:grid-cols-[1.25fr,0.9fr]">
         <section class="space-y-6">
-            <div class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+            <div class="app-card app-card-body">
                 <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                     <div>
                         <div class="flex items-center gap-3">
@@ -59,11 +59,11 @@
                     </div>
 
                     <div class="grid gap-3 sm:grid-cols-2">
-                        <div class="rounded-2xl bg-slate-50 px-4 py-3">
+                        <div class="app-surface px-4 py-3">
                             <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Assigned Rep</p>
                             <p class="mt-2 text-sm font-semibold text-slate-950">{{ optional($lead->assignedTo)->name ?: 'Unassigned' }}</p>
                         </div>
-                        <div class="rounded-2xl bg-slate-50 px-4 py-3">
+                        <div class="app-surface px-4 py-3">
                             <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Sales Team</p>
                             <p class="mt-2 text-sm font-semibold text-slate-950">{{ optional($lead->assignedTeam)->name ?: 'Not linked' }}</p>
                         </div>
@@ -71,23 +71,23 @@
                 </div>
 
                 <div class="mt-8 grid gap-5 md:grid-cols-2">
-                    <div class="rounded-2xl border border-slate-200 p-4">
+                    <div class="app-panel p-4">
                         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Email</p>
                         <p class="mt-2 text-sm font-medium text-slate-900">{{ $lead->email ?: 'Not available' }}</p>
                     </div>
-                    <div class="rounded-2xl border border-slate-200 p-4">
+                    <div class="app-panel p-4">
                         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Phone</p>
                         <p class="mt-2 text-sm font-medium text-slate-900">{{ $lead->phone ?: 'Not available' }}</p>
                     </div>
-                    <div class="rounded-2xl border border-slate-200 p-4">
+                    <div class="app-panel p-4">
                         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Lead Source</p>
                         <p class="mt-2 text-sm font-medium text-slate-900">{{ $lead->lead_source ?: 'Manual entry' }}</p>
                     </div>
-                    <div class="rounded-2xl border border-slate-200 p-4">
+                    <div class="app-panel p-4">
                         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Created On</p>
                         <p class="mt-2 text-sm font-medium text-slate-900">{{ optional($lead->created_at)->format('d M Y, h:i A') ?: 'N/A' }}</p>
                     </div>
-                    <div class="rounded-2xl border border-slate-200 p-4 md:col-span-2">
+                    <div class="app-panel p-4 md:col-span-2">
                         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Address</p>
                         <p class="mt-2 text-sm font-medium leading-6 text-slate-900">
                             {{ collect([$lead->address, $lead->city, $lead->state, $lead->country, $lead->pincode])->filter()->implode(', ') ?: 'No address provided.' }}
@@ -95,19 +95,19 @@
                     </div>
                 </div>
 
-                <div class="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                <div class="mt-8 app-panel bg-slate-50 p-5">
                     <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Internal Notes</p>
                     <p class="mt-3 text-sm leading-7 text-slate-700">{{ $lead->notes ?: 'No internal notes have been captured for this lead yet.' }}</p>
                 </div>
             </div>
 
-            <div class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+            <div class="app-card app-card-body">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Activities / Notes Timeline</p>
                         <h2 class="mt-2 text-2xl font-bold text-slate-950">Follow-up history</h2>
                     </div>
-                    <a href="{{ route('crm.activities.create') }}" class="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    <a href="{{ route('crm.activities.create') }}" class="app-panel bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                         Log Activity
                     </a>
                 </div>
@@ -116,7 +116,7 @@
                     @forelse ($lead->activities ?? [] as $activity)
                         <div class="flex gap-4">
                             <div class="mt-1 h-3 w-3 flex-none rounded-full bg-amber-400"></div>
-                            <div class="flex-1 rounded-2xl border border-slate-200 p-4">
+                            <div class="flex-1 app-panel p-4">
                                 <div class="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
                                     <div>
                                         <p class="text-sm font-bold text-slate-950">{{ $activity->subject }}</p>
@@ -164,14 +164,14 @@
                 </div>
             </div>
 
-            <div class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+            <div class="app-card app-card-body">
                 <p class="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">Quick Actions</p>
                 <div class="mt-5 space-y-3">
-                    <a href="{{ route('crm.leads.index') }}" class="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    <a href="{{ route('crm.leads.index') }}" class="flex items-center justify-between app-panel px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                         Back to all leads
                         <span>→</span>
                     </a>
-                    <a href="{{ route('crm.activities.create') }}" class="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    <a href="{{ route('crm.activities.create') }}" class="flex items-center justify-between app-panel px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                         Create follow-up activity
                         <span>→</span>
                     </a>

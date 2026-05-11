@@ -1,10 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
         <x-crud.page-header eyebrow="Finance Workspace" :title="$payment->payment_number" description="Payment detail with invoice linkage, settlement amount, and source references." :back-url="route('finance.payments.index')" back-label="Back to Payments">
-            <a href="{{ route('finance.payments.edit', $payment) }}" class="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Edit Payment</a>
+            <a href="{{ route('finance.payments.edit', $payment) }}" class="btn btn-primary">Edit Payment</a>
         </x-crud.page-header>
     </x-slot>
-    <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+    <section class="app-card app-card-body">
         <div class="grid gap-6 lg:grid-cols-2">
             <div><p class="text-xs uppercase tracking-[0.18em] text-slate-500">Customer</p><p class="mt-2 text-lg font-semibold text-slate-950">{{ $payment->customer?->name ?: 'Unknown customer' }}</p></div>
             <div><p class="text-xs uppercase tracking-[0.18em] text-slate-500">Invoice</p><p class="mt-2 text-sm text-slate-700">{{ $payment->invoice?->invoice_number ?: 'Unknown invoice' }}</p></div>

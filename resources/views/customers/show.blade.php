@@ -7,13 +7,13 @@
             :breadcrumbs="[['label' => 'CRM'], ['label' => 'Customers', 'url' => route('crm.customers.index')], ['label' => 'Details']]"
             :back-url="route('crm.customers.index')"
         >
-            <a href="{{ route('crm.customers.edit', $customer) }}" class="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Edit Customer</a>
+            <a href="{{ route('crm.customers.edit', $customer) }}" class="btn btn-primary">Edit Customer</a>
         </x-crud.page-header>
     </x-slot>
 
     <div class="space-y-6">
         <div class="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,0.9fr)]">
-            <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+            <section class="app-card app-card-body">
                 <div class="grid gap-6 lg:grid-cols-2">
                     <div>
                         <p class="text-xs uppercase tracking-[0.18em] text-slate-500">Company</p>
@@ -42,18 +42,18 @@
                 </div>
             </section>
 
-            <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+            <section class="app-card app-card-body">
                 <h2 class="text-lg font-bold text-slate-950">Commercial Snapshot</h2>
                 <div class="mt-5 grid gap-4">
-                    <div class="rounded-2xl bg-slate-50 px-4 py-4">
+                    <div class="app-surface px-4 py-4">
                         <p class="text-xs uppercase tracking-[0.16em] text-slate-500">Customer Type</p>
                         <p class="mt-2 text-lg font-bold capitalize text-slate-950">{{ $customer->customer_type }}</p>
                     </div>
-                    <div class="rounded-2xl bg-slate-50 px-4 py-4">
+                    <div class="app-surface px-4 py-4">
                         <p class="text-xs uppercase tracking-[0.16em] text-slate-500">Credit Limit</p>
                         <p class="mt-2 text-lg font-bold text-slate-950">₹{{ number_format((float) $customer->credit_limit, 2) }}</p>
                     </div>
-                    <div class="rounded-2xl bg-slate-50 px-4 py-4">
+                    <div class="app-surface px-4 py-4">
                         <p class="text-xs uppercase tracking-[0.16em] text-slate-500">Opening Balance</p>
                         <p class="mt-2 text-lg font-bold text-slate-950">₹{{ number_format((float) $customer->opening_balance, 2) }}</p>
                     </div>
@@ -61,7 +61,7 @@
             </section>
         </div>
 
-        <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+        <section class="app-card app-card-body">
             <h2 class="text-lg font-bold text-slate-950">Commercial Relationship Overview</h2>
             <p class="mt-2 text-sm leading-7 text-slate-600">Use this section to review the broader operating relationship around the account, including invoice activity, quotation movement, payment behavior, and communication readiness as adjacent modules are connected into the shared customer workspace.</p>
         </section>

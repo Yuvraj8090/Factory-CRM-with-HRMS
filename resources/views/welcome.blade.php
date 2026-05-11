@@ -7,102 +7,145 @@
 
         <title>{{ config('app.name', 'Factory CRM') }}</title>
 
+        <!-- Fonts & Icons -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=source-sans-3:400,500,600,700&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+        <!-- Bootstrap 5 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="hold-transition layout-top-nav">
-        <div class="wrapper">
-            <nav class="main-header navbar navbar-expand-md navbar-white navbar-light">
-                <div class="container">
-                    <a href="{{ route('home') }}" class="navbar-brand">
-                    <span class="brand-text font-weight-light"><strong>Factory</strong> CRM</span>
-                    </a>
+    <body class="bg-light text-sm d-flex flex-column min-vh-100">
+        
+        <!-- Top Navigation -->
+        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm sticky-top border-bottom">
+            <div class="container">
+                <a href="{{ route('home') }}" class="navbar-brand d-flex align-items-center text-dark text-decoration-none">
+                    <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle shadow-sm me-2" style="width: 35px; height: 35px; font-weight: 600; font-size: 0.9rem;">
+                        FC
+                    </span>
+                    <span class="fw-light"><strong>Factory</strong> CRM</span>
+                </a>
 
-                    <div class="ml-auto d-flex align-items-center">
-                        @if (Route::has('login'))
-                            @auth
-                                <a href="{{ route('dashboard') }}" class="btn btn-primary">Open Dashboard</a>
-                            @else
-                                <a href="{{ route('login') }}" class="btn btn-outline-primary mr-2">Sign In</a>
-                                @if (Route::has('register'))
-                                    <a href="{{ route('register') }}" class="btn btn-primary">Create Account</a>
-                                @endif
-                            @endauth
-                        @endif
-                    </div>
+                <div class="ms-auto d-flex align-items-center gap-2">
+                    @if (Route::has('login'))
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="btn btn-primary btn-sm px-3 shadow-sm">Open Dashboard</a>
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-outline-primary btn-sm px-3 shadow-sm">Sign In</a>
+                            @if (Route::has('register'))
+                                <a href="{{ route('register') }}" class="btn btn-primary btn-sm px-3 shadow-sm">Create Account</a>
+                            @endif
+                        @endauth
+                    @endif
                 </div>
-            </nav>
+            </div>
+        </nav>
 
-            <div class="content-wrapper" style="margin-left: 0;">
-                <div class="content">
-                    <div class="container py-5">
-                        <div class="card app-hero-card">
-                            <div class="row no-gutters">
-                                <div class="col-lg-6 app-hero-panel p-5 d-flex flex-column justify-content-center">
-                                    <span class="badge badge-light text-primary mb-3 align-self-start">AdminLTE Integrated</span>
-                                    <h1 class="display-4 font-weight-bold">Factory CRM with HRMS</h1>
-                                    <p class="lead mb-4">A unified AdminLTE interface for customer operations, finance tracking, payroll workflows, and employee management.</p>
-                                    <div class="d-flex flex-wrap gap-2">
-                                        @auth
-                                            <a href="{{ route('dashboard') }}" class="btn btn-light btn-lg mr-2 mb-2">Go to dashboard</a>
-                                        @else
-                                            <a href="{{ route('login') }}" class="btn btn-light btn-lg mr-2 mb-2">Sign in</a>
-                                            @if (Route::has('register'))
-                                            <a href="{{ route('register') }}" class="btn btn-outline-light btn-lg mb-2">Register</a>
-                                            @endif
-                                        @endauth
+        <!-- Main Content -->
+        <main class="flex-grow-1 d-flex align-items-center py-5">
+            <div class="container">
+                <div class="card shadow-lg border-0 overflow-hidden rounded-4">
+                    <div class="row g-0">
+                        
+                        <!-- Left Hero Section -->
+                        <div class="col-lg-6 bg-primary text-white p-4 p-md-5 d-flex flex-column justify-content-center">
+                            <span class="badge bg-light text-primary mb-3 align-self-start py-2 px-3 rounded-pill shadow-sm">Bootstrap 5 Integrated</span>
+                            <h1 class="display-5 fw-bold mb-3">Factory CRM with HRMS</h1>
+                            <p class="lead mb-4 text-white-50">A unified interface for customer operations, finance tracking, payroll workflows, and employee management.</p>
+                            <div class="d-flex flex-wrap gap-3">
+                                @auth
+                                    <a href="{{ route('dashboard') }}" class="btn btn-light btn-lg shadow-sm px-4 fw-medium">Go to dashboard</a>
+                                @else
+                                    <a href="{{ route('login') }}" class="btn btn-light btn-lg shadow-sm px-4 fw-medium">Sign in</a>
+                                    @if (Route::has('register'))
+                                        <a href="{{ route('register') }}" class="btn btn-outline-light btn-lg px-4 fw-medium">Register</a>
+                                    @endif
+                                @endauth
+                            </div>
+                        </div>
+
+                        <!-- Right Info Boxes Section -->
+                        <div class="col-lg-6 bg-white p-4 p-md-5">
+                            <div class="row g-4 mb-4">
+                                
+                                <!-- CRM Box -->
+                                <div class="col-sm-6">
+                                    <div class="card h-100 bg-light border-0 shadow-sm rounded-3 hover-shadow transition">
+                                        <div class="card-body d-flex align-items-center">
+                                            <div class="flex-shrink-0 d-flex align-items-center justify-content-center bg-primary text-white rounded-circle shadow-sm" style="width: 50px; height: 50px; font-size: 1.25rem;">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                            <div class="ms-3">
+                                                <h6 class="mb-1 fw-bold text-dark">CRM</h6>
+                                                <p class="mb-0 text-muted small">Leads, customers, & activities</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-6 bg-white p-5">
-                                    <div class="row">
-                                        <div class="col-sm-6 mb-4">
-                                            <div class="info-box bg-light h-100">
-                                                <span class="info-box-icon bg-primary"><i class="fas fa-users"></i></span>
-                                                <div class="info-box-content">
-                                                    <span class="info-box-text">CRM</span>
-                                                    <span class="text-muted">Leads, customers, and activities</span>
-                                                </div>
+                                
+                                <!-- Finance Box -->
+                                <div class="col-sm-6">
+                                    <div class="card h-100 bg-light border-0 shadow-sm rounded-3">
+                                        <div class="card-body d-flex align-items-center">
+                                            <div class="flex-shrink-0 d-flex align-items-center justify-content-center bg-success text-white rounded-circle shadow-sm" style="width: 50px; height: 50px; font-size: 1.25rem;">
+                                                <i class="fas fa-money-check-dollar"></i>
                                             </div>
-                                        </div>
-                                        <div class="col-sm-6 mb-4">
-                                            <div class="info-box bg-light h-100">
-                                                <span class="info-box-icon bg-success"><i class="fas fa-money-check-dollar"></i></span>
-                                                <div class="info-box-content">
-                                                    <span class="info-box-text">Finance</span>
-                                                    <span class="text-muted">Quotations, invoices, and payments</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6 mb-4">
-                                            <div class="info-box bg-light h-100">
-                                                <span class="info-box-icon bg-warning"><i class="fas fa-user-tie"></i></span>
-                                                <div class="info-box-content">
-                                                    <span class="info-box-text">HRMS</span>
-                                                    <span class="text-muted">Employees, attendance, and payroll</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6 mb-4">
-                                            <div class="info-box bg-light h-100">
-                                                <span class="info-box-icon bg-danger"><i class="fas fa-sliders"></i></span>
-                                                <div class="info-box-content">
-                                                    <span class="info-box-text">Settings</span>
-                                                    <span class="text-muted">Master data and templates</span>
-                                                </div>
+                                            <div class="ms-3">
+                                                <h6 class="mb-1 fw-bold text-dark">Finance</h6>
+                                                <p class="mb-0 text-muted small">Quotations, invoices, & payments</p>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="alert alert-primary mb-0">
-                                        Responsive AdminLTE components now provide a consistent frontend and backend visual system across the application.
+                                </div>
+
+                                <!-- HRMS Box -->
+                                <div class="col-sm-6">
+                                    <div class="card h-100 bg-light border-0 shadow-sm rounded-3">
+                                        <div class="card-body d-flex align-items-center">
+                                            <div class="flex-shrink-0 d-flex align-items-center justify-content-center bg-warning text-dark rounded-circle shadow-sm" style="width: 50px; height: 50px; font-size: 1.25rem;">
+                                                <i class="fas fa-user-tie"></i>
+                                            </div>
+                                            <div class="ms-3">
+                                                <h6 class="mb-1 fw-bold text-dark">HRMS</h6>
+                                                <p class="mb-0 text-muted small">Employees, attendance, & payroll</p>
+                                            </div>
+                                        </div>
                                     </div>
+                                </div>
+
+                                <!-- Settings Box -->
+                                <div class="col-sm-6">
+                                    <div class="card h-100 bg-light border-0 shadow-sm rounded-3">
+                                        <div class="card-body d-flex align-items-center">
+                                            <div class="flex-shrink-0 d-flex align-items-center justify-content-center bg-danger text-white rounded-circle shadow-sm" style="width: 50px; height: 50px; font-size: 1.25rem;">
+                                                <i class="fas fa-sliders"></i>
+                                            </div>
+                                            <div class="ms-3">
+                                                <h6 class="mb-1 fw-bold text-dark">Settings</h6>
+                                                <p class="mb-0 text-muted small">Master data & templates</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="alert alert-primary border-0 shadow-sm d-flex align-items-center mb-0 rounded-3" role="alert">
+                                <i class="fas fa-info-circle fs-4 me-3"></i>
+                                <div class="small">
+                                    Responsive Bootstrap components now provide a consistent frontend and backend visual system across the application.
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </main>
+
+        <!-- Bootstrap 5 JS Bundle -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>

@@ -3,7 +3,7 @@
 @endphp
 
 <div class="space-y-6">
-    <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
+    <section class="app-card app-card-body">
         <div class="border-b border-slate-200 pb-5">
             <h2 class="text-lg font-bold text-slate-950">Sales Team Profile</h2>
             <p class="mt-1 text-sm text-slate-500">Define team leadership, operating purpose, and activation status for lead distribution and sales ownership.</p>
@@ -42,7 +42,7 @@
     </section>
 
     <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <a href="{{ route('crm.sales-teams.index') }}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Cancel</a>
-        <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">{{ $salesTeam ? 'Update Team' : 'Save Team' }}</button>
+        <a href="{{ route('crm.sales-teams.index') }}" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">{{ $salesTeam ? 'Update Team' : 'Save Team' }}</button>
     </div>
 </div>

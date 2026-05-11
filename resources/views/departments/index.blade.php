@@ -2,9 +2,9 @@
     <x-slot name="header">
         <x-crud.page-header title="Departments" description="Maintain the workforce structure used for employee assignment, reporting, and HR planning across the factory." icon="building" :breadcrumbs="[['label' => 'HRMS'], ['label' => 'Departments']]" :action-url="route('hrms.departments.create')" action-label="Add Department" />
     </x-slot>
-    <section class="rounded-3xl border border-white/70 bg-white shadow-sm shadow-slate-200/60">
+    <section class="app-card">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-200 text-sm">
+            <table class="table table-hover app-data-table text-sm">
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                     <tr><th class="px-6 py-4">Department</th><th class="px-6 py-4">Designations</th><th class="px-6 py-4">Employees</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-right">Actions</th></tr>
                 </thead>
@@ -15,7 +15,7 @@
                             <td class="px-6 py-5 text-slate-600">{{ $department->designations_count ?? $department->designations?->count() ?? 0 }}</td>
                             <td class="px-6 py-5 text-slate-600">{{ $department->employees_count ?? $department->employees?->count() ?? 0 }}</td>
                             <td class="px-6 py-5"><x-crud.status-badge :value="$department->is_active ? 'Active' : 'Inactive'" /></td>
-                            <td class="px-6 py-5"><div class="flex justify-end gap-2"><a href="{{ route('hrms.departments.show', $department) }}" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">View</a><a href="{{ route('hrms.departments.edit', $department) }}" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">Edit</a></div></td>
+                            <td class="px-6 py-5"><div class="flex justify-end gap-2"><a href="{{ route('hrms.departments.show', $department) }}" class="btn btn-outline-secondary btn-sm">View</a><a href="{{ route('hrms.departments.edit', $department) }}" class="btn btn-outline-secondary btn-sm">Edit</a></div></td>
                         </tr>
                     @empty
                         <tr><td colspan="5" class="px-6 py-16 text-center text-sm text-slate-500">No departments are available yet.</td></tr>
