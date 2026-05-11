@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\ItemMaster;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ItemMasterController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
         $items = ItemMaster::with('category')
             ->when($request->boolean('active_only'), fn ($query) => $query->active())
@@ -17,46 +19,90 @@ class ItemMasterController extends Controller
             ->orderBy('item_name')
             ->paginate($request->integer('per_page', 15));
 
+        if (! $request->expectsJson()) {
+            return view('item-masters.index', [
+                'items' => $items,
+                'categories' => Category::active()->select('id', 'name')->orderBy('name')->get(),
+            ]);
+        }
+
         return response()->json($items);
     }
 
-    public function create(): JsonResponse
+    public function create(Request $request): JsonResponse|View
     {
-        return response()->json([
+        $payload = [
             'categories' => Category::active()->select('id', 'name')->orderBy('name')->get(),
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('item-masters.create', $payload);
+        }
+
+        return response()->json($payload);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $item = ItemMaster::create($this->validateItem($request));
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('settings.item-masters.show', $item)
+                ->with('status', 'Item created successfully.');
+        }
 
         return response()->json($item->load('category'), 201);
     }
 
-    public function show(ItemMaster $itemMaster): JsonResponse
+    public function show(Request $request, ItemMaster $itemMaster): JsonResponse|View
     {
-        return response()->json($itemMaster->load('category'));
+        $itemMaster->load('category');
+
+        if (! $request->expectsJson()) {
+            return view('item-masters.show', ['itemMaster' => $itemMaster]);
+        }
+
+        return response()->json($itemMaster);
     }
 
-    public function edit(ItemMaster $itemMaster): JsonResponse
+    public function edit(Request $request, ItemMaster $itemMaster): JsonResponse|View
     {
-        return response()->json([
+        $payload = [
+            'itemMaster' => $itemMaster->load('category'),
             'item' => $itemMaster->load('category'),
             'categories' => Category::active()->select('id', 'name')->orderBy('name')->get(),
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('item-masters.edit', $payload);
+        }
+
+        return response()->json($payload);
     }
 
-    public function update(Request $request, ItemMaster $itemMaster): JsonResponse
+    public function update(Request $request, ItemMaster $itemMaster): JsonResponse|RedirectResponse
     {
         $itemMaster->update($this->validateItem($request, $itemMaster->id));
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('settings.item-masters.show', $itemMaster)
+                ->with('status', 'Item updated successfully.');
+        }
 
         return response()->json($itemMaster->fresh()->load('category'));
     }
 
-    public function destroy(ItemMaster $itemMaster): JsonResponse
+    public function destroy(Request $request, ItemMaster $itemMaster): JsonResponse|RedirectResponse
     {
         $itemMaster->delete();
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('settings.item-masters.index')
+                ->with('status', 'Item deleted successfully.');
+        }
 
         return response()->json(['message' => 'Item deleted successfully.']);
     }

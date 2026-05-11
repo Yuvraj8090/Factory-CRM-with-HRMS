@@ -7,31 +7,43 @@ use App\Models\DebitNote;
 use App\Models\Invoice;
 use App\Models\ItemMaster;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class DebitNoteController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
         $debitNotes = DebitNote::with(['customer', 'invoice', 'items.item', 'creator'])
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
             ->latest('debit_note_date')
             ->paginate($request->integer('per_page', 15));
 
+        if (! $request->expectsJson()) {
+            return view('debit-notes.index', compact('debitNotes'));
+        }
+
         return response()->json($debitNotes);
     }
 
-    public function create(): JsonResponse
+    public function create(Request $request): JsonResponse|View
     {
-        return response()->json([
+        $payload = [
             'customers' => Customer::query()->select('id', 'name', 'company_name')->orderBy('name')->get(),
             'invoices' => Invoice::query()->select('id', 'invoice_number', 'customer_id')->orderByDesc('invoice_date')->get(),
             'items' => ItemMaster::active()->orderBy('item_name')->get(),
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('debit-notes.create', $payload);
+        }
+
+        return response()->json($payload);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $data = $this->validateDebitNote($request);
 
@@ -54,25 +66,44 @@ class DebitNoteController extends Controller
             return $note->load(['customer', 'invoice', 'items.item', 'creator']);
         });
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('finance.debit-notes.show', $debitNote)
+                ->with('status', 'Debit note created successfully.');
+        }
+
         return response()->json($debitNote, 201);
     }
 
-    public function show(DebitNote $debitNote): JsonResponse
+    public function show(Request $request, DebitNote $debitNote): JsonResponse|View
     {
-        return response()->json($debitNote->load(['customer', 'invoice', 'items.item', 'creator']));
+        $debitNote->load(['customer', 'invoice', 'items.item', 'creator']);
+
+        if (! $request->expectsJson()) {
+            return view('debit-notes.show', compact('debitNote'));
+        }
+
+        return response()->json($debitNote);
     }
 
-    public function edit(DebitNote $debitNote): JsonResponse
+    public function edit(Request $request, DebitNote $debitNote): JsonResponse|View
     {
-        return response()->json([
+        $payload = [
+            'debitNote' => $debitNote->load(['customer', 'invoice', 'items.item', 'creator']),
             'debit_note' => $debitNote->load(['customer', 'invoice', 'items.item', 'creator']),
             'customers' => Customer::query()->select('id', 'name', 'company_name')->orderBy('name')->get(),
             'invoices' => Invoice::query()->select('id', 'invoice_number', 'customer_id')->orderByDesc('invoice_date')->get(),
             'items' => ItemMaster::active()->orderBy('item_name')->get(),
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('debit-notes.edit', $payload);
+        }
+
+        return response()->json($payload);
     }
 
-    public function update(Request $request, DebitNote $debitNote): JsonResponse
+    public function update(Request $request, DebitNote $debitNote): JsonResponse|RedirectResponse
     {
         $data = $this->validateDebitNote($request, $debitNote->id);
 
@@ -94,12 +125,24 @@ class DebitNoteController extends Controller
             return $debitNote->fresh()->load(['customer', 'invoice', 'items.item', 'creator']);
         });
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('finance.debit-notes.show', $debitNote)
+                ->with('status', 'Debit note updated successfully.');
+        }
+
         return response()->json($debitNote);
     }
 
-    public function destroy(DebitNote $debitNote): JsonResponse
+    public function destroy(Request $request, DebitNote $debitNote): JsonResponse|RedirectResponse
     {
         $debitNote->delete();
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('finance.debit-notes.index')
+                ->with('status', 'Debit note deleted successfully.');
+        }
 
         return response()->json(['message' => 'Debit note deleted successfully.']);
     }

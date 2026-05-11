@@ -4,28 +4,40 @@ namespace App\Http\Controllers;
 
 use App\Models\WhatsAppTemplate;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class WhatsAppTemplateController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
         $templates = WhatsAppTemplate::withCount('messages')
             ->when($request->boolean('active_only'), fn ($query) => $query->active())
             ->orderBy('template_name')
             ->paginate($request->integer('per_page', 15));
 
+        if (! $request->expectsJson()) {
+            return view('whats-app-templates.index', compact('templates'));
+        }
+
         return response()->json($templates);
     }
 
-    public function create(): JsonResponse
+    public function create(Request $request): JsonResponse|View
     {
-        return response()->json([
+        $payload = [
             'categories' => ['Marketing', 'Utility', 'Authentication', 'Transactional'],
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('whats-app-templates.create', $payload);
+        }
+
+        return response()->json($payload);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $template = WhatsAppTemplate::create($request->validate([
             'template_name' => ['required', 'string', 'max:255', 'unique:whats_app_templates,template_name'],
@@ -35,20 +47,41 @@ class WhatsAppTemplateController extends Controller
             'is_active' => ['required', 'boolean'],
         ]));
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('settings.whats-app-templates.show', $template)
+                ->with('status', 'WhatsApp template created successfully.');
+        }
+
         return response()->json($template, 201);
     }
 
-    public function show(WhatsAppTemplate $whatsAppTemplate): JsonResponse
+    public function show(Request $request, WhatsAppTemplate $whatsAppTemplate): JsonResponse|View
     {
-        return response()->json($whatsAppTemplate->load('messages'));
-    }
+        $whatsAppTemplate->load('messages');
 
-    public function edit(WhatsAppTemplate $whatsAppTemplate): JsonResponse
-    {
+        if (! $request->expectsJson()) {
+            return view('whats-app-templates.show', compact('whatsAppTemplate'));
+        }
+
         return response()->json($whatsAppTemplate);
     }
 
-    public function update(Request $request, WhatsAppTemplate $whatsAppTemplate): JsonResponse
+    public function edit(Request $request, WhatsAppTemplate $whatsAppTemplate): JsonResponse|View
+    {
+        $payload = [
+            'whatsAppTemplate' => $whatsAppTemplate,
+            'categories' => ['Marketing', 'Utility', 'Authentication', 'Transactional'],
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('whats-app-templates.edit', $payload);
+        }
+
+        return response()->json($whatsAppTemplate);
+    }
+
+    public function update(Request $request, WhatsAppTemplate $whatsAppTemplate): JsonResponse|RedirectResponse
     {
         $whatsAppTemplate->update($request->validate([
             'template_name' => ['required', 'string', 'max:255', 'unique:whats_app_templates,template_name,' . $whatsAppTemplate->id],
@@ -58,12 +91,24 @@ class WhatsAppTemplateController extends Controller
             'is_active' => ['required', 'boolean'],
         ]));
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('settings.whats-app-templates.show', $whatsAppTemplate)
+                ->with('status', 'WhatsApp template updated successfully.');
+        }
+
         return response()->json($whatsAppTemplate->fresh());
     }
 
-    public function destroy(WhatsAppTemplate $whatsAppTemplate): JsonResponse
+    public function destroy(Request $request, WhatsAppTemplate $whatsAppTemplate): JsonResponse|RedirectResponse
     {
         $whatsAppTemplate->delete();
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('settings.whats-app-templates.index')
+                ->with('status', 'WhatsApp template deleted successfully.');
+        }
 
         return response()->json(['message' => 'WhatsApp template deleted successfully.']);
     }

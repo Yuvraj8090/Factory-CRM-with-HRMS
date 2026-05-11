@@ -8,11 +8,13 @@ use App\Models\ActivityType;
 use App\Models\Lead;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class ActivityController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
         $activities = Activity::with(['lead', 'type', 'status', 'assignedTo', 'creator'])
             ->when($request->filled('lead_id'), fn ($query) => $query->where('lead_id', $request->integer('lead_id')))
@@ -20,20 +22,34 @@ class ActivityController extends Controller
             ->latest()
             ->paginate($request->integer('per_page', 15));
 
+        if (! $request->expectsJson()) {
+            return view('activities.index', [
+                'activities' => $activities,
+                'leads' => Lead::query()->select('id', 'name')->orderBy('name')->get(),
+                'activity_statuses' => ActivityStatus::active()->orderBy('name')->get(),
+            ]);
+        }
+
         return response()->json($activities);
     }
 
-    public function create(): JsonResponse
+    public function create(Request $request): JsonResponse|View
     {
-        return response()->json([
+        $payload = [
             'leads' => Lead::query()->select('id', 'name', 'company_name')->orderBy('name')->get(),
             'activity_types' => ActivityType::active()->orderBy('name')->get(),
             'activity_statuses' => ActivityStatus::active()->orderBy('name')->get(),
             'users' => User::query()->select('id', 'name')->orderBy('name')->get(),
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('activities.create', $payload);
+        }
+
+        return response()->json($payload);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $data = $request->validate([
             'lead_id' => ['required', 'exists:leads,id'],
@@ -50,26 +66,44 @@ class ActivityController extends Controller
 
         $activity = Activity::create($data)->load(['lead', 'type', 'status', 'assignedTo', 'creator']);
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('crm.activities.show', $activity)
+                ->with('status', 'Activity created successfully.');
+        }
+
         return response()->json($activity, 201);
     }
 
-    public function show(Activity $activity): JsonResponse
+    public function show(Request $request, Activity $activity): JsonResponse|View
     {
-        return response()->json($activity->load(['lead', 'type', 'status', 'assignedTo', 'creator']));
+        $activity->load(['lead.stage', 'type', 'status', 'assignedTo', 'creator']);
+
+        if (! $request->expectsJson()) {
+            return view('activities.show', compact('activity'));
+        }
+
+        return response()->json($activity);
     }
 
-    public function edit(Activity $activity): JsonResponse
+    public function edit(Request $request, Activity $activity): JsonResponse|View
     {
-        return response()->json([
+        $payload = [
             'activity' => $activity->load(['lead', 'type', 'status', 'assignedTo']),
             'leads' => Lead::query()->select('id', 'name', 'company_name')->orderBy('name')->get(),
             'activity_types' => ActivityType::active()->orderBy('name')->get(),
             'activity_statuses' => ActivityStatus::active()->orderBy('name')->get(),
             'users' => User::query()->select('id', 'name')->orderBy('name')->get(),
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('activities.edit', $payload);
+        }
+
+        return response()->json($payload);
     }
 
-    public function update(Request $request, Activity $activity): JsonResponse
+    public function update(Request $request, Activity $activity): JsonResponse|RedirectResponse
     {
         $data = $request->validate([
             'lead_id' => ['required', 'exists:leads,id'],
@@ -84,12 +118,24 @@ class ActivityController extends Controller
 
         $activity->update($data);
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('crm.activities.show', $activity)
+                ->with('status', 'Activity updated successfully.');
+        }
+
         return response()->json($activity->fresh()->load(['lead', 'type', 'status', 'assignedTo', 'creator']));
     }
 
-    public function destroy(Activity $activity): JsonResponse
+    public function destroy(Request $request, Activity $activity): JsonResponse|RedirectResponse
     {
         $activity->delete();
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('crm.activities.index')
+                ->with('status', 'Activity deleted successfully.');
+        }
 
         return response()->json(['message' => 'Activity deleted successfully.']);
     }

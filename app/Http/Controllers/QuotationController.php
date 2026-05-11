@@ -6,31 +6,45 @@ use App\Models\Customer;
 use App\Models\ItemMaster;
 use App\Models\Quotation;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class QuotationController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
+        $statuses = ['Draft', 'Sent', 'Accepted', 'Rejected', 'Expired'];
+
         $quotations = Quotation::with(['customer', 'items.item', 'creator'])
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
             ->latest('quotation_date')
             ->paginate($request->integer('per_page', 15));
 
+        if (! $request->expectsJson()) {
+            return view('quotations.index', compact('quotations', 'statuses'));
+        }
+
         return response()->json($quotations);
     }
 
-    public function create(): JsonResponse
+    public function create(Request $request): JsonResponse|View
     {
-        return response()->json([
+        $payload = [
             'customers' => Customer::query()->select('id', 'name', 'company_name')->orderBy('name')->get(),
             'items' => ItemMaster::active()->orderBy('item_name')->get(),
             'statuses' => ['Draft', 'Sent', 'Accepted', 'Rejected', 'Expired'],
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('quotations.create', $payload);
+        }
+
+        return response()->json($payload);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $data = $this->validateQuotation($request);
 
@@ -57,25 +71,43 @@ class QuotationController extends Controller
             return $quotation->load(['customer', 'items.item', 'creator']);
         });
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('finance.quotations.show', $quotation)
+                ->with('status', 'Quotation created successfully.');
+        }
+
         return response()->json($quotation, 201);
     }
 
-    public function show(Quotation $quotation): JsonResponse
+    public function show(Request $request, Quotation $quotation): JsonResponse|View
     {
-        return response()->json($quotation->load(['customer', 'items.item', 'creator', 'invoices']));
+        $quotation->load(['customer', 'items.item', 'creator', 'invoices']);
+
+        if (! $request->expectsJson()) {
+            return view('quotations.show', compact('quotation'));
+        }
+
+        return response()->json($quotation);
     }
 
-    public function edit(Quotation $quotation): JsonResponse
+    public function edit(Request $request, Quotation $quotation): JsonResponse|View
     {
-        return response()->json([
+        $payload = [
             'quotation' => $quotation->load(['customer', 'items.item', 'creator']),
             'customers' => Customer::query()->select('id', 'name', 'company_name')->orderBy('name')->get(),
             'items' => ItemMaster::active()->orderBy('item_name')->get(),
             'statuses' => ['Draft', 'Sent', 'Accepted', 'Rejected', 'Expired'],
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('quotations.edit', $payload);
+        }
+
+        return response()->json($payload);
     }
 
-    public function update(Request $request, Quotation $quotation): JsonResponse
+    public function update(Request $request, Quotation $quotation): JsonResponse|RedirectResponse
     {
         $data = $this->validateQuotation($request, $quotation->id);
 
@@ -102,12 +134,24 @@ class QuotationController extends Controller
             return $quotation->fresh()->load(['customer', 'items.item', 'creator']);
         });
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('finance.quotations.show', $quotation)
+                ->with('status', 'Quotation updated successfully.');
+        }
+
         return response()->json($quotation);
     }
 
-    public function destroy(Quotation $quotation): JsonResponse
+    public function destroy(Request $request, Quotation $quotation): JsonResponse|RedirectResponse
     {
         $quotation->delete();
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('finance.quotations.index')
+                ->with('status', 'Quotation deleted successfully.');
+        }
 
         return response()->json(['message' => 'Quotation deleted successfully.']);
     }
