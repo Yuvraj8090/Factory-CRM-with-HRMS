@@ -14,6 +14,11 @@ use Illuminate\View\View;
 
 class CustomerController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Customer::class, 'customer');
+    }
+
     public function index(Request $request): JsonResponse|View
     {
         $customers = Customer::withCount(['quotations', 'invoices', 'payments'])

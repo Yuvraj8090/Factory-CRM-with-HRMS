@@ -14,6 +14,11 @@ use Illuminate\View\View;
 
 class AttendanceController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Attendance::class, 'attendance');
+    }
+
     public function index(Request $request): JsonResponse|View
     {
         $attendance = Attendance::with(['employeeUser', 'creator'])

@@ -31,6 +31,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'employees',
             'leave-types',
             'leave-requests',
+            'payrolls',
         ];
 
         $permissions = ['view dashboard', 'manage roles and permissions'];
@@ -49,6 +50,12 @@ class RolesAndPermissionsSeeder extends Seeder
             'send customer communication',
             'import attendances',
             'export attendances',
+            'approve leave-requests',
+            'reject leave-requests',
+            'send invoices',
+            'mark-paid invoices',
+            'approve payrolls',
+            'generate payrolls',
         ]);
 
         foreach (array_unique($permissions) as $permission) {
@@ -76,6 +83,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'view employees',
             'view attendances',
             'view leave-requests',
+            'approve leave-requests',
+            'reject leave-requests',
+            'view payrolls',
+            'create payrolls',
+            'update payrolls',
+            'approve payrolls',
+            'generate payrolls',
         ];
         Role::findOrCreate('Manager', 'web')->syncPermissions($managerPermissions);
 
@@ -107,6 +121,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'create leave-requests',
             'update leave-requests',
             'delete leave-requests',
+            'approve leave-requests',
+            'reject leave-requests',
+            'view payrolls',
+            'create payrolls',
+            'update payrolls',
+            'approve payrolls',
+            'generate payrolls',
             'view customers',
         ];
 
@@ -143,6 +164,9 @@ class RolesAndPermissionsSeeder extends Seeder
             'update invoices',
             'view payments',
             'create payments',
+            'send invoices',
+            'mark-paid invoices',
+            'view payrolls',
         ];
 
         Role::findOrCreate('Sales Lead', 'web')->syncPermissions($salesLeadPermissions);

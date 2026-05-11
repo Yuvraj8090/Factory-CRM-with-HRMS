@@ -14,6 +14,7 @@ use App\Http\Controllers\LeadController;
 use App\Http\Controllers\LeaveRequestController;
 use App\Http\Controllers\LeaveTypeController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\SalesTeamController;
@@ -83,6 +84,11 @@ Route::middleware(['auth'])->group(function () {
         Route::resource('employees', EmployeeController::class);
         Route::resource('leave-types', LeaveTypeController::class);
         Route::resource('leave-requests', LeaveRequestController::class);
+        Route::post('payrolls/{payroll}/submit-review', [PayrollController::class, 'submitForReview'])->name('payrolls.submit-review');
+        Route::post('payrolls/{payroll}/approve', [PayrollController::class, 'approve'])->name('payrolls.approve');
+        Route::get('payrolls/{payroll}/bank-transfer', [PayrollController::class, 'bankTransfer'])->name('payrolls.bank-transfer');
+        Route::get('payrolls/{payroll}/items/{payrollItem}/payslip', [PayrollController::class, 'payslip'])->name('payrolls.payslip');
+        Route::resource('payrolls', PayrollController::class);
     });
 
     /*

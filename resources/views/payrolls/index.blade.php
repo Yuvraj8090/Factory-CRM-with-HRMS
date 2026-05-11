@@ -1,0 +1,41 @@
+<x-app-layout>
+    <x-slot name="header">
+        <x-crud.page-header eyebrow="HRMS Workspace" title="Payroll" description="Generate payroll periods, monitor approval progress, and export bank-ready payment instructions." :action-url="route('hrms.payrolls.create')" action-label="Generate Payroll" />
+    </x-slot>
+
+    <section class="rounded-3xl border border-white/70 bg-white shadow-sm shadow-slate-200/60">
+        <form method="GET" class="grid gap-4 border-b border-slate-200 px-6 py-5 lg:grid-cols-[220px_auto]">
+            <div>
+                <x-input-label for="year" value="Payroll Year" />
+                <select id="year" name="year" class="mt-2 block w-full rounded-2xl border-slate-200 text-sm shadow-sm">
+                    <option value="">All years</option>
+                    @foreach ($years as $year)
+                        <option value="{{ $year }}" @selected((string) request('year') === (string) $year)>{{ $year }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex items-end"><button type="submit" class="inline-flex w-full items-center justify-center rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800 sm:w-auto">Apply</button></div>
+        </form>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"><tr><th class="px-6 py-4">Payroll Run</th><th class="px-6 py-4">Period</th><th class="px-6 py-4">Employees</th><th class="px-6 py-4">Status</th><th class="px-6 py-4">Net Total</th><th class="px-6 py-4 text-right">Actions</th></tr></thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse ($payrolls as $payroll)
+                        <tr class="transition hover:bg-slate-50/80">
+                            <td class="px-6 py-5"><a href="{{ route('hrms.payrolls.show', $payroll) }}" class="font-bold text-slate-950 hover:text-amber-700">{{ $payroll->name }}</a><p class="mt-1 text-sm text-slate-500">{{ optional($payroll->payout_date)->format('d M Y') ?: 'Payout pending' }}</p></td>
+                            <td class="px-6 py-5 text-slate-600">{{ optional($payroll->period_start)->format('d M Y') }} to {{ optional($payroll->period_end)->format('d M Y') }}</td>
+                            <td class="px-6 py-5 text-slate-600">{{ $payroll->items_count }}</td>
+                            <td class="px-6 py-5"><x-crud.status-badge :value="ucfirst($payroll->status)" /></td>
+                            <td class="px-6 py-5 text-slate-600">₹{{ number_format((float) $payroll->total_net, 2) }}</td>
+                            <td class="px-6 py-5"><div class="flex justify-end gap-2"><a href="{{ route('hrms.payrolls.show', $payroll) }}" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">View</a><a href="{{ route('hrms.payrolls.edit', $payroll) }}" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">Edit</a></div></td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="6" class="px-6 py-16 text-center text-sm text-slate-500">No payroll runs available yet.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="border-t border-slate-200 px-6 py-4">{{ $payrolls->withQueryString()->links() }}</div>
+    </section>
+</x-app-layout>

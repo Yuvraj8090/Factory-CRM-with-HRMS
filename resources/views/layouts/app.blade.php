@@ -18,31 +18,32 @@
         @php
             $navigation = [
                 'CRM' => [
-                    ['label' => 'Dashboard', 'route' => 'dashboard', 'match' => ['dashboard']],
-                    ['label' => 'Leads', 'route' => 'crm.leads.index', 'match' => ['crm.leads.*']],
-                    ['label' => 'Activities', 'route' => 'crm.activities.index', 'match' => ['crm.activities.*']],
-                    ['label' => 'Customers', 'route' => 'crm.customers.index', 'match' => ['crm.customers.*']],
-                    ['label' => 'Sales Teams', 'route' => 'crm.sales-teams.index', 'match' => ['crm.sales-teams.*']],
+                    ['label' => 'Dashboard', 'route' => 'dashboard', 'match' => ['dashboard'], 'can' => 'view dashboard'],
+                    ['label' => 'Leads', 'route' => 'crm.leads.index', 'match' => ['crm.leads.*'], 'can' => 'view leads'],
+                    ['label' => 'Activities', 'route' => 'crm.activities.index', 'match' => ['crm.activities.*'], 'can' => 'view activities'],
+                    ['label' => 'Customers', 'route' => 'crm.customers.index', 'match' => ['crm.customers.*'], 'can' => 'view customers'],
+                    ['label' => 'Sales Teams', 'route' => 'crm.sales-teams.index', 'match' => ['crm.sales-teams.*'], 'can' => 'view sales-teams'],
                 ],
                 'Finance' => [
-                    ['label' => 'Quotations', 'route' => 'finance.quotations.index', 'match' => ['finance.quotations.*']],
-                    ['label' => 'Invoices', 'route' => 'finance.invoices.index', 'match' => ['finance.invoices.*']],
-                    ['label' => 'Payments', 'route' => 'finance.payments.index', 'match' => ['finance.payments.*']],
-                    ['label' => 'Debit Notes', 'route' => 'finance.debit-notes.index', 'match' => ['finance.debit-notes.*']],
+                    ['label' => 'Quotations', 'route' => 'finance.quotations.index', 'match' => ['finance.quotations.*'], 'can' => 'view quotations'],
+                    ['label' => 'Invoices', 'route' => 'finance.invoices.index', 'match' => ['finance.invoices.*'], 'can' => 'view invoices'],
+                    ['label' => 'Payments', 'route' => 'finance.payments.index', 'match' => ['finance.payments.*'], 'can' => 'view payments'],
+                    ['label' => 'Debit Notes', 'route' => 'finance.debit-notes.index', 'match' => ['finance.debit-notes.*'], 'can' => 'view debit-notes'],
                 ],
                 'HRMS' => [
-                    ['label' => 'Employees', 'route' => 'hrms.employees.index', 'match' => ['hrms.employees.*']],
-                    ['label' => 'Attendance', 'route' => 'hrms.attendances.index', 'match' => ['hrms.attendances.*']],
-                    ['label' => 'Departments', 'route' => 'hrms.departments.index', 'match' => ['hrms.departments.*']],
-                    ['label' => 'Designations', 'route' => 'hrms.designations.index', 'match' => ['hrms.designations.*']],
-                    ['label' => 'Leave Types', 'route' => 'hrms.leave-types.index', 'match' => ['hrms.leave-types.*']],
-                    ['label' => 'Leave Requests', 'route' => 'hrms.leave-requests.index', 'match' => ['hrms.leave-requests.*']],
+                    ['label' => 'Employees', 'route' => 'hrms.employees.index', 'match' => ['hrms.employees.*'], 'can' => 'view employees'],
+                    ['label' => 'Attendance', 'route' => 'hrms.attendances.index', 'match' => ['hrms.attendances.*'], 'can' => 'view attendances'],
+                    ['label' => 'Departments', 'route' => 'hrms.departments.index', 'match' => ['hrms.departments.*'], 'can' => 'view departments'],
+                    ['label' => 'Designations', 'route' => 'hrms.designations.index', 'match' => ['hrms.designations.*'], 'can' => 'view designations'],
+                    ['label' => 'Leave Types', 'route' => 'hrms.leave-types.index', 'match' => ['hrms.leave-types.*'], 'can' => 'view leave-types'],
+                    ['label' => 'Leave Requests', 'route' => 'hrms.leave-requests.index', 'match' => ['hrms.leave-requests.*'], 'can' => 'view leave-requests'],
+                    ['label' => 'Payroll', 'route' => 'hrms.payrolls.index', 'match' => ['hrms.payrolls.*'], 'can' => 'view payrolls'],
                 ],
                 'Settings' => [
-                    ['label' => 'Categories', 'route' => 'settings.categories.index', 'match' => ['settings.categories.*']],
-                    ['label' => 'Item Masters', 'route' => 'settings.item-masters.index', 'match' => ['settings.item-masters.*']],
-                    ['label' => 'WhatsApp Templates', 'route' => 'settings.whats-app-templates.index', 'match' => ['settings.whats-app-templates.*']],
-                    ['label' => 'Profile', 'route' => 'profile.edit', 'match' => ['profile.*']],
+                    ['label' => 'Categories', 'route' => 'settings.categories.index', 'match' => ['settings.categories.*'], 'can' => 'view categories'],
+                    ['label' => 'Item Masters', 'route' => 'settings.item-masters.index', 'match' => ['settings.item-masters.*'], 'can' => 'view item-masters'],
+                    ['label' => 'WhatsApp Templates', 'route' => 'settings.whats-app-templates.index', 'match' => ['settings.whats-app-templates.*'], 'can' => 'view whats-app-templates'],
+                    ['label' => 'Profile', 'route' => 'profile.edit', 'match' => ['profile.*'], 'can' => null],
                 ],
             ];
 
@@ -117,6 +118,7 @@
                             <p class="px-3 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">{{ $group }}</p>
                             <div class="mt-3 space-y-1">
                                 @foreach ($items as $item)
+                                    @continue($item['can'] && ! auth()->user()?->can($item['can']))
                                     @php($active = $isActive($item['match']))
                                     <a
                                         href="{{ route($item['route']) }}"

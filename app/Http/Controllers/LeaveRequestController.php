@@ -13,6 +13,11 @@ use Illuminate\View\View;
 
 class LeaveRequestController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(LeaveRequest::class, 'leave_request');
+    }
+
     public function index(Request $request): JsonResponse|View
     {
         $leaveRequests = LeaveRequest::with(['user', 'leaveType', 'approver'])

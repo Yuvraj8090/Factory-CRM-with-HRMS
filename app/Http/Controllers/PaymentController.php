@@ -13,6 +13,11 @@ use Illuminate\View\View;
 
 class PaymentController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Payment::class, 'payment');
+    }
+
     public function index(Request $request): JsonResponse|View
     {
         $payments = Payment::with(['invoice', 'customer', 'creator'])
