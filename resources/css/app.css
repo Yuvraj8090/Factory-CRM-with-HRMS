@@ -1,3 +1,81 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    body {
+        font-family: "Source Sans 3", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+}
+
+@layer components {
+    .main-sidebar .brand-link {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .main-sidebar .nav-sidebar .nav-link {
+        border-radius: 0.75rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .main-sidebar .nav-sidebar .nav-link.active {
+        box-shadow: none;
+    }
+
+    .content-wrapper {
+        background: #f4f6f9;
+    }
+
+    .content-header h1,
+    .content-header .h1 {
+        color: #1f2d3d;
+    }
+
+    .page-header-card {
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        border-radius: 1rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        box-shadow: 0 0.5rem 1rem rgba(15, 23, 42, 0.05);
+    }
+
+    .login-page,
+    .register-page {
+        background:
+            radial-gradient(circle at top left, rgba(13, 110, 253, 0.18), transparent 28%),
+            radial-gradient(circle at bottom right, rgba(40, 167, 69, 0.18), transparent 24%),
+            linear-gradient(135deg, #eef2f7 0%, #dde6ef 100%);
+    }
+
+    .login-card-body .form-control,
+    .register-card-body .form-control {
+        border-radius: 0.5rem;
+    }
+
+    .app-hero-card {
+        border: 0;
+        border-radius: 1.25rem;
+        box-shadow: 0 1rem 3rem rgba(31, 45, 61, 0.14);
+        overflow: hidden;
+    }
+
+    .app-hero-panel {
+        background: linear-gradient(135deg, #1f2d3d 0%, #0d6efd 100%);
+        color: #fff;
+    }
+
+    .card,
+    .small-box,
+    .info-box,
+    .login-card-body,
+    .register-card-body {
+        border-radius: 1rem;
+    }
+
+    .table thead th {
+        border-bottom-width: 1px;
+    }
+
+    .main-footer {
+        font-size: 0.95rem;
+    }
+}

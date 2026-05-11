@@ -8,57 +8,47 @@
         <title>{{ config('app.name', 'Factory CRM') }}</title>
 
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=source-sans-3:400,500,600,700&display=swap" rel="stylesheet" />
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @stack('styles')
     </head>
-    <body class="bg-slate-100 font-[Manrope] text-slate-900 antialiased">
-        <x-crud.flash-stack />
-
+    <body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed text-sm">
         @php
             $navigation = [
                 'CRM' => [
-                    ['label' => 'Dashboard', 'route' => 'dashboard', 'match' => ['dashboard'], 'can' => 'view dashboard', 'icon' => 'home'],
-                    ['label' => 'Leads', 'route' => 'crm.leads.index', 'match' => ['crm.leads.*'], 'can' => 'view leads', 'icon' => 'user-plus'],
-                    ['label' => 'Activities', 'route' => 'crm.activities.index', 'match' => ['crm.activities.*'], 'can' => 'view activities', 'icon' => 'clipboard'],
-                    ['label' => 'Customers', 'route' => 'crm.customers.index', 'match' => ['crm.customers.*'], 'can' => 'view customers', 'icon' => 'building'],
-                    ['label' => 'Sales Teams', 'route' => 'crm.sales-teams.index', 'match' => ['crm.sales-teams.*'], 'can' => 'view sales-teams', 'icon' => 'users'],
+                    ['label' => 'Dashboard', 'route' => 'dashboard', 'match' => ['dashboard'], 'can' => 'view dashboard', 'icon' => 'fa-solid fa-gauge-high'],
+                    ['label' => 'Leads', 'route' => 'crm.leads.index', 'match' => ['crm.leads.*'], 'can' => 'view leads', 'icon' => 'fa-solid fa-user-plus'],
+                    ['label' => 'Activities', 'route' => 'crm.activities.index', 'match' => ['crm.activities.*'], 'can' => 'view activities', 'icon' => 'fa-solid fa-clipboard-list'],
+                    ['label' => 'Customers', 'route' => 'crm.customers.index', 'match' => ['crm.customers.*'], 'can' => 'view customers', 'icon' => 'fa-solid fa-building'],
+                    ['label' => 'Sales Teams', 'route' => 'crm.sales-teams.index', 'match' => ['crm.sales-teams.*'], 'can' => 'view sales-teams', 'icon' => 'fa-solid fa-users'],
                 ],
                 'Finance' => [
-                    ['label' => 'Quotations', 'route' => 'finance.quotations.index', 'match' => ['finance.quotations.*'], 'can' => 'view quotations', 'icon' => 'document'],
-                    ['label' => 'Invoices', 'route' => 'finance.invoices.index', 'match' => ['finance.invoices.*'], 'can' => 'view invoices', 'icon' => 'receipt'],
-                    ['label' => 'Payments', 'route' => 'finance.payments.index', 'match' => ['finance.payments.*'], 'can' => 'view payments', 'icon' => 'currency'],
-                    ['label' => 'Debit Notes', 'route' => 'finance.debit-notes.index', 'match' => ['finance.debit-notes.*'], 'can' => 'view debit-notes', 'icon' => 'document'],
+                    ['label' => 'Quotations', 'route' => 'finance.quotations.index', 'match' => ['finance.quotations.*'], 'can' => 'view quotations', 'icon' => 'fa-solid fa-file-signature'],
+                    ['label' => 'Invoices', 'route' => 'finance.invoices.index', 'match' => ['finance.invoices.*'], 'can' => 'view invoices', 'icon' => 'fa-solid fa-file-invoice'],
+                    ['label' => 'Payments', 'route' => 'finance.payments.index', 'match' => ['finance.payments.*'], 'can' => 'view payments', 'icon' => 'fa-solid fa-money-bill-wave'],
+                    ['label' => 'Debit Notes', 'route' => 'finance.debit-notes.index', 'match' => ['finance.debit-notes.*'], 'can' => 'view debit-notes', 'icon' => 'fa-solid fa-file-lines'],
                 ],
                 'HRMS' => [
-                    ['label' => 'Employees', 'route' => 'hrms.employees.index', 'match' => ['hrms.employees.*'], 'can' => 'view employees', 'icon' => 'briefcase'],
-                    ['label' => 'Attendance', 'route' => 'hrms.attendances.index', 'match' => ['hrms.attendances.*'], 'can' => 'view attendances', 'icon' => 'calendar'],
-                    ['label' => 'Departments', 'route' => 'hrms.departments.index', 'match' => ['hrms.departments.*'], 'can' => 'view departments', 'icon' => 'building'],
-                    ['label' => 'Designations', 'route' => 'hrms.designations.index', 'match' => ['hrms.designations.*'], 'can' => 'view designations', 'icon' => 'tag'],
-                    ['label' => 'Leave Types', 'route' => 'hrms.leave-types.index', 'match' => ['hrms.leave-types.*'], 'can' => 'view leave-types', 'icon' => 'folder'],
-                    ['label' => 'Leave Requests', 'route' => 'hrms.leave-requests.index', 'match' => ['hrms.leave-requests.*'], 'can' => 'view leave-requests', 'icon' => 'clipboard'],
-                    ['label' => 'Payroll', 'route' => 'hrms.payrolls.index', 'match' => ['hrms.payrolls.*'], 'can' => 'view payrolls', 'icon' => 'chart-bar'],
+                    ['label' => 'Employees', 'route' => 'hrms.employees.index', 'match' => ['hrms.employees.*'], 'can' => 'view employees', 'icon' => 'fa-solid fa-briefcase'],
+                    ['label' => 'Attendance', 'route' => 'hrms.attendances.index', 'match' => ['hrms.attendances.*'], 'can' => 'view attendances', 'icon' => 'fa-solid fa-calendar-check'],
+                    ['label' => 'Departments', 'route' => 'hrms.departments.index', 'match' => ['hrms.departments.*'], 'can' => 'view departments', 'icon' => 'fa-solid fa-building-user'],
+                    ['label' => 'Designations', 'route' => 'hrms.designations.index', 'match' => ['hrms.designations.*'], 'can' => 'view designations', 'icon' => 'fa-solid fa-tags'],
+                    ['label' => 'Leave Types', 'route' => 'hrms.leave-types.index', 'match' => ['hrms.leave-types.*'], 'can' => 'view leave-types', 'icon' => 'fa-solid fa-folder-open'],
+                    ['label' => 'Leave Requests', 'route' => 'hrms.leave-requests.index', 'match' => ['hrms.leave-requests.*'], 'can' => 'view leave-requests', 'icon' => 'fa-solid fa-file-circle-check'],
+                    ['label' => 'Payroll', 'route' => 'hrms.payrolls.index', 'match' => ['hrms.payrolls.*'], 'can' => 'view payrolls', 'icon' => 'fa-solid fa-chart-column'],
                 ],
                 'Settings' => [
-                    ['label' => 'Categories', 'route' => 'settings.categories.index', 'match' => ['settings.categories.*'], 'can' => 'view categories', 'icon' => 'folder'],
-                    ['label' => 'Item Masters', 'route' => 'settings.item-masters.index', 'match' => ['settings.item-masters.*'], 'can' => 'view item-masters', 'icon' => 'cube'],
-                    ['label' => 'WhatsApp Templates', 'route' => 'settings.whats-app-templates.index', 'match' => ['settings.whats-app-templates.*'], 'can' => 'view whats-app-templates', 'icon' => 'chat'],
-                    ['label' => 'Profile', 'route' => 'profile.edit', 'match' => ['profile.*'], 'can' => null, 'icon' => 'cog'],
+                    ['label' => 'Categories', 'route' => 'settings.categories.index', 'match' => ['settings.categories.*'], 'can' => 'view categories', 'icon' => 'fa-solid fa-folder-tree'],
+                    ['label' => 'Item Masters', 'route' => 'settings.item-masters.index', 'match' => ['settings.item-masters.*'], 'can' => 'view item-masters', 'icon' => 'fa-solid fa-cubes'],
+                    ['label' => 'WhatsApp Templates', 'route' => 'settings.whats-app-templates.index', 'match' => ['settings.whats-app-templates.*'], 'can' => 'view whats-app-templates', 'icon' => 'fa-brands fa-whatsapp'],
+                    ['label' => 'Profile', 'route' => 'profile.edit', 'match' => ['profile.*'], 'can' => null, 'icon' => 'fa-solid fa-user-gear'],
                 ],
             ];
 
-            $isActive = function (array $patterns): bool {
-                foreach ($patterns as $pattern) {
-                    if (request()->routeIs($pattern)) {
-                        return true;
-                    }
-                }
-
-                return false;
-            };
-
-            $userName = auth()->user()?->name ?? 'User';
-            $userEmail = auth()->user()?->email ?? 'user@example.com';
+            $user = auth()->user();
+            $userName = $user?->name ?? 'User';
+            $userEmail = $user?->email ?? 'user@example.com';
             $initials = collect(explode(' ', $userName))
                 ->filter()
                 ->map(fn (string $part) => strtoupper(substr($part, 0, 1)))
@@ -66,155 +56,133 @@
                 ->implode('');
         @endphp
 
-        <div x-data="{ sidebarOpen: false }" class="min-h-screen">
-            <div
-                x-show="sidebarOpen"
-                x-transition.opacity
-                class="fixed inset-0 z-30 bg-slate-950/50 lg:hidden"
-                @click="sidebarOpen = false"
-                style="display: none;"
-            ></div>
+        <div class="wrapper">
+            <x-crud.flash-stack />
 
-            <aside
-                class="fixed inset-y-0 left-0 z-40 flex w-72 -translate-x-full flex-col border-r border-slate-800 bg-slate-950 text-slate-100 transition-transform duration-300 lg:translate-x-0"
-                :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }"
-            >
-                <div class="border-b border-slate-800 px-6 py-5">
-                    <div class="flex items-center justify-between">
-                        <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-                            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-400 via-orange-500 to-emerald-500 text-base font-extrabold text-white shadow-lg shadow-orange-900/30">
-                                FC
-                            </div>
-                            <div>
-                                <p class="text-sm font-semibold tracking-[0.24em] text-slate-400 uppercase">Factory CRM</p>
-                                <p class="text-lg font-bold text-white">Operations Hub</p>
-                            </div>
+            <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                    </li>
+                    <li class="nav-item d-none d-sm-inline-block">
+                        <a href="{{ route('dashboard') }}" class="nav-link">Dashboard</a>
+                    </li>
+                    <li class="nav-item d-none d-sm-inline-block">
+                        <a href="{{ route('home') }}" class="nav-link">Frontend</a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item d-none d-md-flex align-items-center pr-3 text-muted">
+                        <i class="far fa-calendar-alt mr-2"></i>{{ now()->format('D, d M Y') }}
+                    </li>
+                    <li class="nav-item dropdown user-menu">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
+                            <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white font-weight-bold" style="width: 2.25rem; height: 2.25rem;">
+                                {{ $initials }}
+                            </span>
+                            <span class="d-none d-md-inline ml-2">{{ $userName }}</span>
                         </a>
-                        <button
-                            type="button"
-                            class="rounded-xl p-2 text-slate-400 hover:bg-slate-900 hover:text-white lg:hidden"
-                            @click="sidebarOpen = false"
-                        >
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18 18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="mt-4 rounded-2xl border border-slate-800 bg-slate-900/70 px-4 py-3">
-                        <p class="text-xs uppercase tracking-[0.2em] text-slate-500">System Health</p>
-                        <div class="mt-2 flex items-center justify-between">
-                            <span class="text-sm font-medium text-slate-200">Manufacturing CRM Online</span>
-                            <span class="inline-flex items-center gap-2 rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300">
-                                <span class="h-2 w-2 rounded-full bg-emerald-400"></span>
-                                Live
+                        <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                            <li class="user-header bg-primary">
+                                <span class="d-inline-flex align-items-center justify-content-center rounded-circle bg-white text-primary font-weight-bold mb-2" style="width: 4rem; height: 4rem; font-size: 1.25rem;">
+                                    {{ $initials }}
+                                </span>
+                                <p class="mb-0">{{ $userName }}</p>
+                                <small>{{ $userEmail }}</small>
+                            </li>
+                            <li class="user-footer">
+                                <a href="{{ route('profile.edit') }}" class="btn btn-default btn-flat">Profile</a>
+                                <form method="POST" action="{{ route('logout') }}" class="float-right">
+                                    @csrf
+                                    <button type="submit" class="btn btn-default btn-flat">Sign out</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <aside class="main-sidebar sidebar-dark-primary elevation-4">
+                <a href="{{ route('dashboard') }}" class="brand-link">
+                    <span class="brand-image img-circle elevation-2 d-inline-flex align-items-center justify-content-center bg-primary text-white font-weight-bold" style="opacity: 1; width: 33px; height: 33px;">
+                        FC
+                    </span>
+                    <span class="brand-text font-weight-light">Factory CRM</span>
+                </a>
+
+                <div class="sidebar">
+                    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                        <div class="image">
+                            <span class="img-circle elevation-2 d-inline-flex align-items-center justify-content-center bg-white text-primary font-weight-bold" style="width: 34px; height: 34px;">
+                                {{ $initials }}
                             </span>
                         </div>
+                        <div class="info">
+                            <a href="{{ route('profile.edit') }}" class="d-block">{{ $userName }}</a>
+                            <small class="text-muted">{{ $userEmail }}</small>
+                        </div>
+                    </div>
+
+                    <nav class="mt-2">
+                        <ul class="nav nav-pills nav-sidebar flex-column nav-flat" data-widget="treeview" role="menu" data-accordion="false">
+                            @foreach ($navigation as $group => $items)
+                                @php
+                                    $visibleItems = collect($items)->filter(fn (array $item) => ! $item['can'] || auth()->user()->can($item['can']));
+                                    $groupActive = $visibleItems->contains(fn (array $item) => collect($item['match'])->contains(fn (string $pattern) => request()->routeIs($pattern)));
+                                @endphp
+
+                                @if ($visibleItems->isNotEmpty())
+                                    <li class="nav-header text-uppercase">{{ $group }}</li>
+                                    @foreach ($visibleItems as $item)
+                                        @php
+                                            $active = collect($item['match'])->contains(fn (string $pattern) => request()->routeIs($pattern));
+                                        @endphp
+                                        <li class="nav-item">
+                                            <a href="{{ route($item['route']) }}" class="nav-link {{ $active ? 'active' : '' }}">
+                                                <i class="nav-icon {{ $item['icon'] }}"></i>
+                                                <p>{{ $item['label'] }}</p>
+                                            </a>
+                                        </li>
+                                    @endforeach
+                                @endif
+                            @endforeach
+                        </ul>
+                    </nav>
+                </div>
+            </aside>
+
+            <div class="content-wrapper">
+                <div class="content-header">
+                    <div class="container-fluid">
+                        @isset($header)
+                            {{ $header }}
+                        @else
+                            <div class="row mb-2">
+                                <div class="col-sm-6">
+                                    <h1 class="m-0">{{ config('app.name', 'Factory CRM') }}</h1>
+                                </div>
+                            </div>
+                        @endisset
                     </div>
                 </div>
 
-                <nav class="flex-1 space-y-8 overflow-y-auto px-4 py-6">
-                    @foreach ($navigation as $group => $items)
-                        <div>
-                            <p class="px-3 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">{{ $group }}</p>
-                            <div class="mt-3 space-y-1">
-                                @foreach ($items as $item)
-                                    @continue($item['can'] && ! auth()->user()?->can($item['can']))
-                                    @php($active = $isActive($item['match']))
-                                    <a
-                                        href="{{ route($item['route']) }}"
-                                        class="{{ $active ? 'bg-gradient-to-r from-amber-400/20 via-orange-400/10 to-emerald-400/10 text-white shadow-inner shadow-amber-500/10 ring-1 ring-amber-400/30' : 'text-slate-300 hover:bg-slate-900 hover:text-white' }} flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-medium transition"
-                                    >
-                                        <span class="flex items-center gap-3">
-                                            <span class="{{ $active ? 'bg-white/15 text-white' : 'bg-slate-800 text-slate-400' }} inline-flex h-8 w-8 items-center justify-center rounded-xl">
-                                                <x-crud.icon :name="$item['icon']" class="h-4 w-4" />
-                                            </span>
-                                            <span>{{ $item['label'] }}</span>
-                                        </span>
-                                        <svg class="h-4 w-4 {{ $active ? 'text-white' : 'text-slate-500' }}" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M7.22 14.78a.75.75 0 0 1 0-1.06L10.94 10 7.22 6.28a.75.75 0 1 1 1.06-1.06l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0Z" clip-rule="evenodd" />
-                                        </svg>
-                                    </a>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endforeach
-                </nav>
-            </aside>
-
-            <div class="lg:pl-72">
-                <header class="sticky top-0 z-20 border-b border-slate-200/80 bg-white/80 backdrop-blur">
-                    <div class="flex items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-                        <div class="flex items-center gap-4">
-                            <button
-                                type="button"
-                                class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm lg:hidden"
-                                @click="sidebarOpen = true"
-                            >
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" />
-                                </svg>
-                            </button>
-
-                            <div>
-                                <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Food Processing Factory CRM</p>
-                                <div class="mt-1 text-xl font-bold text-slate-950">Operations Control Center</div>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center gap-3">
-                            <div class="hidden rounded-2xl border border-slate-200 bg-white px-4 py-2 text-right shadow-sm sm:block">
-                                <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Shift Window</p>
-                                <p class="text-sm font-semibold text-slate-900">{{ now()->format('D, d M Y') }}</p>
-                            </div>
-
-                            <x-dropdown align="right" width="56">
-                                <x-slot name="trigger">
-                                    <button class="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2 shadow-sm transition hover:border-slate-300 hover:bg-slate-50">
-                                        <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 text-sm font-bold text-white">
-                                            {{ $initials }}
-                                        </span>
-                                        <span class="hidden text-left sm:block">
-                                            <span class="block text-sm font-semibold text-slate-900">{{ $userName }}</span>
-                                            <span class="block text-xs text-slate-500">{{ $userEmail }}</span>
-                                        </span>
-                                        <svg class="hidden h-4 w-4 text-slate-400 sm:block" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" />
-                                        </svg>
-                                    </button>
-                                </x-slot>
-
-                                <x-slot name="content">
-                                    <div class="px-4 py-3">
-                                        <p class="text-sm font-semibold text-slate-900">{{ $userName }}</p>
-                                        <p class="text-xs text-slate-500">{{ $userEmail }}</p>
-                                    </div>
-                                    <div class="border-t border-slate-100"></div>
-                                    <x-dropdown-link :href="route('profile.edit')">
-                                        {{ __('Profile Settings') }}
-                                    </x-dropdown-link>
-                                    <form method="POST" action="{{ route('logout') }}">
-                                        @csrf
-                                        <x-dropdown-link :href="route('logout')"
-                                            onclick="event.preventDefault(); this.closest('form').submit();">
-                                            {{ __('Sign Out') }}
-                                        </x-dropdown-link>
-                                    </form>
-                                </x-slot>
-                            </x-dropdown>
-                        </div>
+                <section class="content pb-4">
+                    <div class="container-fluid">
+                        {{ $slot }}
                     </div>
-                </header>
-
-                <main class="px-4 py-6 sm:px-6 lg:px-8">
-                    @isset($header)
-                        <div class="mb-6 rounded-3xl border border-white/70 bg-gradient-to-r from-white to-slate-50 px-6 py-5 shadow-sm">
-                            {{ $header }}
-                        </div>
-                    @endisset
-
-                    {{ $slot }}
-                </main>
+                </section>
             </div>
+
+            <footer class="main-footer">
+                <strong>{{ config('app.name', 'Factory CRM') }}</strong>
+                <span class="text-muted ml-2">AdminLTE-powered CRM, finance, and HR operations workspace.</span>
+                <div class="float-right d-none d-sm-inline-block">
+                    <b>UI</b> Unified frontend and backend
+                </div>
+            </footer>
         </div>
+
+        @stack('scripts')
     </body>
 </html>

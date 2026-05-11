@@ -16,6 +16,7 @@ use App\Policies\InvoicePolicy;
 use App\Policies\LeaveRequestPolicy;
 use App\Policies\PaymentPolicy;
 use App\Policies\PayrollPolicy;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -34,6 +35,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Paginator::useBootstrapFive();
+
         Gate::policy(Customer::class, CustomerPolicy::class);
         Gate::policy(Employee::class, EmployeePolicy::class);
         Gate::policy(Attendance::class, AttendancePolicy::class);
