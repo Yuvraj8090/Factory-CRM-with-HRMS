@@ -142,9 +142,7 @@
                         <li class="nav-item">
                             <a href="{{ route('dashboard') }}" class="nav-link text-dark fw-medium">Dashboard</a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('home') }}" class="nav-link text-secondary">Frontend</a>
-                        </li>
+                        
                     </ul>
 
                     <!-- Right Side Components -->
@@ -251,9 +249,7 @@
                         <strong class="text-dark">{{ config('app.name', 'Factory CRM') }}</strong> &copy; {{ date('Y') }}. 
                         <span class="d-none d-sm-inline">All rights reserved.</span>
                     </div>
-                    <div>
-                        <span class="badge bg-secondary rounded-pill">UI</span> Unified frontend and backend
-                    </div>
+                   
                 </footer>
 
             </div>

@@ -2,7 +2,7 @@
     <x-slot name="header">
         <x-crud.page-header
             title="Profile Settings"
-            description="Manage your account profile, password, and account lifecycle from the same AdminLTE workspace."
+         
             icon="cog"
             :breadcrumbs="[['label' => 'Settings'], ['label' => 'Profile']]"
         />

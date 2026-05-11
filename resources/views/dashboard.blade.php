@@ -2,7 +2,7 @@
     <x-slot name="header">
         <x-crud.page-header
             title="Operations Dashboard"
-            description="Track sales momentum, financial collections, workforce attendance, and plant readiness from one AdminLTE control panel."
+            
             icon="chart-bar"
             :breadcrumbs="[['label' => 'Dashboard']]"
         >
@@ -107,9 +107,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="alert alert-light border mb-0">
-                        The dashboard is now using AdminLTE cards, info boxes, and responsive grid behavior so the same visual language carries across desktop, tablet, and mobile views.
-                    </div>
+                   
                 </div>
             </div>
         </div>

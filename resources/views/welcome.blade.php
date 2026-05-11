@@ -133,12 +133,7 @@
 
                             </div>
 
-                            <div class="alert alert-primary border-0 shadow-sm d-flex align-items-center mb-0 rounded-3" role="alert">
-                                <i class="fas fa-info-circle fs-4 me-3"></i>
-                                <div class="small">
-                                    Responsive Bootstrap components now provide a consistent frontend and backend visual system across the application.
-                                </div>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>

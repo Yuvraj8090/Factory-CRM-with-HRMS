@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <p class="login-box-msg">Create an account for your AdminLTE-enabled workspace.</p>
+
 
     <form method="POST" action="{{ route('register') }}">
         @csrf
