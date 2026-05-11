@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <x-crud.page-header
-           
             :title="$customer->name"
-           
+            description="Review the full commercial identity of this customer account, including tax credentials, credit posture, and relationship readiness."
+            icon="building"
+            :breadcrumbs="[['label' => 'CRM'], ['label' => 'Customers', 'url' => route('crm.customers.index')], ['label' => 'Details']]"
             :back-url="route('crm.customers.index')"
-           
         >
             <a href="{{ route('crm.customers.edit', $customer) }}" class="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Edit Customer</a>
         </x-crud.page-header>
@@ -62,8 +62,8 @@
         </div>
 
         <section class="rounded-3xl border border-white/70 bg-white p-6 shadow-sm shadow-slate-200/60">
-            <h2 class="text-lg font-bold text-slate-950">Activity Timeline</h2>
-            <p class="mt-2 text-sm text-slate-500">Invoices, quotations, messages, and communication history can be surfaced here as the remaining modules move onto the shared web pattern.</p>
+            <h2 class="text-lg font-bold text-slate-950">Commercial Relationship Overview</h2>
+            <p class="mt-2 text-sm leading-7 text-slate-600">Use this section to review the broader operating relationship around the account, including invoice activity, quotation movement, payment behavior, and communication readiness as adjacent modules are connected into the shared customer workspace.</p>
         </section>
     </div>
 </x-app-layout>

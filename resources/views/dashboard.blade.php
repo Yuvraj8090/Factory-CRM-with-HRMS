@@ -1,15 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-                
-                <h1 class="mt-2 text-3xl font-bold text-slate-950">Factory Performance Dashboard</h1>
-               
-            </div>
+        <x-crud.page-header
+            title="Factory Performance Dashboard"
+            description="Review the commercial pulse, collections, attendance posture, and operating readiness of the food processing business from one executive control screen."
+            icon="chart-bar"
+            :breadcrumbs="[['label' => 'Dashboard']]"
+        >
             <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
                 <span class="font-semibold">Today:</span> {{ now()->format('l, d M Y') }}
             </div>
-        </div>
+        </x-crud.page-header>
     </x-slot>
 
     @php

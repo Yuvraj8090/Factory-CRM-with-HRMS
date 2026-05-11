@@ -1,0 +1,32 @@
+<x-app-layout>
+    <x-slot name="header">
+        <x-crud.page-header title="Item Masters" description="Maintain the product catalog with codes, tax data, pricing, and stock baselines that downstream finance and sales flows can trust." icon="cube" :breadcrumbs="[['label' => 'Settings'], ['label' => 'Item Masters']]" :action-url="route('settings.item-masters.create')" action-label="Add Item" />
+    </x-slot>
+    <section class="rounded-3xl border border-white/70 bg-white shadow-sm shadow-slate-200/60">
+        <form method="GET" class="grid gap-4 border-b border-slate-200 px-6 py-5 lg:grid-cols-[220px_220px_auto]">
+            <div><x-input-label for="category_id" value="Category" /><select id="category_id" name="category_id" class="mt-2 block w-full rounded-2xl border-slate-200 text-sm shadow-sm"><option value="">All categories</option>@foreach (($categories ?? collect()) as $category)<option value="{{ $category->id }}" @selected((string) request('category_id') === (string) $category->id)>{{ $category->name }}</option>@endforeach</select></div>
+            <div><x-input-label for="active_only" value="Status" /><select id="active_only" name="active_only" class="mt-2 block w-full rounded-2xl border-slate-200 text-sm shadow-sm"><option value="">All items</option><option value="1" @selected(request('active_only') === '1')>Active only</option></select></div>
+            <div class="flex items-end"><button type="submit" class="inline-flex w-full items-center justify-center rounded-2xl bg-slate-950 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Apply Filters</button></div>
+        </form>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"><tr><th class="px-6 py-4">Item</th><th class="px-6 py-4">Category</th><th class="px-6 py-4">GST</th><th class="px-6 py-4">Sale Price</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-right">Actions</th></tr></thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse ($items as $item)
+                        <tr class="transition hover:bg-slate-50/80">
+                            <td class="px-6 py-5"><a href="{{ route('settings.item-masters.show', $item) }}" class="font-bold text-slate-950 hover:text-amber-700">{{ $item->item_name }}</a><p class="mt-1 text-sm text-slate-500">{{ $item->item_code }}{{ $item->unit ? ' • '.$item->unit : '' }}</p></td>
+                            <td class="px-6 py-5 text-slate-600">{{ $item->category?->name ?: 'Uncategorized' }}</td>
+                            <td class="px-6 py-5 text-slate-600">{{ number_format((float) $item->gst_rate, 2) }}%</td>
+                            <td class="px-6 py-5 text-slate-600">₹{{ number_format((float) $item->sale_price, 2) }}</td>
+                            <td class="px-6 py-5"><x-crud.status-badge :value="$item->is_active ? 'Active' : 'Inactive'" /></td>
+                            <td class="px-6 py-5"><div class="flex justify-end gap-2"><a href="{{ route('settings.item-masters.show', $item) }}" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">View</a><a href="{{ route('settings.item-masters.edit', $item) }}" class="rounded-xl border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-50">Edit</a></div></td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="6" class="px-6 py-16 text-center text-sm text-slate-500">No item master records have been created yet.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="border-t border-slate-200 px-6 py-4">{{ $items->withQueryString()->links() }}</div>
+    </section>
+</x-app-layout>

@@ -1,17 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-                <h1 class="mt-2 text-3xl font-bold text-slate-950">Lead Management</h1>
-                
-            </div>
-            <a
-                href="{{ route('crm.leads.create') }}"
-                class="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-            >
-                Add New Lead
-            </a>
-        </div>
+        <x-crud.page-header
+            title="Lead Management"
+            description="Monitor every prospect, ownership assignment, and stage movement so the pipeline stays visible and commercially actionable."
+            icon="user-plus"
+            :breadcrumbs="[['label' => 'CRM'], ['label' => 'Leads']]"
+            :action-url="route('crm.leads.create')"
+            action-label="Add New Lead"
+        />
     </x-slot>
 
     @php
@@ -27,12 +23,6 @@
     @endphp
 
     <div class="space-y-6">
-        @if (session('status'))
-            <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-                {{ session('status') }}
-            </div>
-        @endif
-
         <section class="overflow-hidden rounded-3xl border border-white/70 bg-white shadow-sm shadow-slate-200/60">
             <div class="flex flex-col gap-4 border-b border-slate-200 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
                 <div>
