@@ -13,8 +13,4 @@
         <h6 class="mb-1" x-text="tone === 'success' ? 'Success' : 'Attention needed'"></h6>
         <p class="mb-0" x-text="message"></p>
     </div>
- </div>
-            </button>
-        </div>
-    </div>
 </div>

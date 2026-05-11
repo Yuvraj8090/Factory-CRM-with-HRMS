@@ -5,13 +5,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'admin-lte/dist/css/adminlte.min.css';
 
 import $ from 'jquery';
-import * as bootstrap from 'bootstrap';
+import Popper from 'popper.js';
 import Alpine from 'alpinejs';
-import 'admin-lte';
 
 window.$ = $;
 window.jQuery = $;
-window.bootstrap = bootstrap;
+window.Popper = Popper;
+
+await import('bootstrap');
+await import('admin-lte');
+
 window.Alpine = Alpine;
 
 Alpine.start();

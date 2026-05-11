@@ -22,7 +22,7 @@
             <p class="text-sm text-uppercase text-muted mb-2">{{ $eyebrow }}</p>
         @endif
         <div class="d-flex align-items-start gap-3">
-            <div class="d-flex align-items-center justify-content-center rounded-circle bg-primary-subtle text-primary shadow-sm" style="width: 56px; height: 56px;">
+            <div class="d-flex align-items-center justify-content-center rounded-circle text-primary shadow-sm border" style="width: 56px; height: 56px; background: rgba(13, 110, 253, 0.12);">
                 <x-crud.icon :name="$icon" class="h-7 w-7" />
             </div>
             <div>

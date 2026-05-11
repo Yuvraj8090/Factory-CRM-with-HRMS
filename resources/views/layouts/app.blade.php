@@ -17,32 +17,32 @@
         @php
             $navigation = [
                 'CRM' => [
-                    ['label' => 'Dashboard', 'route' => 'dashboard', 'match' => ['dashboard'], 'can' => 'view dashboard', 'icon' => 'fa-solid fa-gauge-high'],
-                    ['label' => 'Leads', 'route' => 'crm.leads.index', 'match' => ['crm.leads.*'], 'can' => 'view leads', 'icon' => 'fa-solid fa-user-plus'],
-                    ['label' => 'Activities', 'route' => 'crm.activities.index', 'match' => ['crm.activities.*'], 'can' => 'view activities', 'icon' => 'fa-solid fa-clipboard-list'],
-                    ['label' => 'Customers', 'route' => 'crm.customers.index', 'match' => ['crm.customers.*'], 'can' => 'view customers', 'icon' => 'fa-solid fa-building'],
-                    ['label' => 'Sales Teams', 'route' => 'crm.sales-teams.index', 'match' => ['crm.sales-teams.*'], 'can' => 'view sales-teams', 'icon' => 'fa-solid fa-users'],
+                    ['label' => 'Dashboard', 'route' => 'dashboard', 'match' => ['dashboard'], 'can' => 'view dashboard', 'icon' => 'fas fa-tachometer-alt'],
+                    ['label' => 'Leads', 'route' => 'crm.leads.index', 'match' => ['crm.leads.*'], 'can' => 'view leads', 'icon' => 'fas fa-user-plus'],
+                    ['label' => 'Activities', 'route' => 'crm.activities.index', 'match' => ['crm.activities.*'], 'can' => 'view activities', 'icon' => 'fas fa-clipboard-list'],
+                    ['label' => 'Customers', 'route' => 'crm.customers.index', 'match' => ['crm.customers.*'], 'can' => 'view customers', 'icon' => 'fas fa-building'],
+                    ['label' => 'Sales Teams', 'route' => 'crm.sales-teams.index', 'match' => ['crm.sales-teams.*'], 'can' => 'view sales-teams', 'icon' => 'fas fa-users'],
                 ],
                 'Finance' => [
-                    ['label' => 'Quotations', 'route' => 'finance.quotations.index', 'match' => ['finance.quotations.*'], 'can' => 'view quotations', 'icon' => 'fa-solid fa-file-signature'],
-                    ['label' => 'Invoices', 'route' => 'finance.invoices.index', 'match' => ['finance.invoices.*'], 'can' => 'view invoices', 'icon' => 'fa-solid fa-file-invoice'],
-                    ['label' => 'Payments', 'route' => 'finance.payments.index', 'match' => ['finance.payments.*'], 'can' => 'view payments', 'icon' => 'fa-solid fa-money-bill-wave'],
-                    ['label' => 'Debit Notes', 'route' => 'finance.debit-notes.index', 'match' => ['finance.debit-notes.*'], 'can' => 'view debit-notes', 'icon' => 'fa-solid fa-file-lines'],
+                    ['label' => 'Quotations', 'route' => 'finance.quotations.index', 'match' => ['finance.quotations.*'], 'can' => 'view quotations', 'icon' => 'fas fa-file-signature'],
+                    ['label' => 'Invoices', 'route' => 'finance.invoices.index', 'match' => ['finance.invoices.*'], 'can' => 'view invoices', 'icon' => 'fas fa-file-invoice'],
+                    ['label' => 'Payments', 'route' => 'finance.payments.index', 'match' => ['finance.payments.*'], 'can' => 'view payments', 'icon' => 'fas fa-money-bill-wave'],
+                    ['label' => 'Debit Notes', 'route' => 'finance.debit-notes.index', 'match' => ['finance.debit-notes.*'], 'can' => 'view debit-notes', 'icon' => 'fas fa-file-alt'],
                 ],
                 'HRMS' => [
-                    ['label' => 'Employees', 'route' => 'hrms.employees.index', 'match' => ['hrms.employees.*'], 'can' => 'view employees', 'icon' => 'fa-solid fa-briefcase'],
-                    ['label' => 'Attendance', 'route' => 'hrms.attendances.index', 'match' => ['hrms.attendances.*'], 'can' => 'view attendances', 'icon' => 'fa-solid fa-calendar-check'],
-                    ['label' => 'Departments', 'route' => 'hrms.departments.index', 'match' => ['hrms.departments.*'], 'can' => 'view departments', 'icon' => 'fa-solid fa-building-user'],
-                    ['label' => 'Designations', 'route' => 'hrms.designations.index', 'match' => ['hrms.designations.*'], 'can' => 'view designations', 'icon' => 'fa-solid fa-tags'],
-                    ['label' => 'Leave Types', 'route' => 'hrms.leave-types.index', 'match' => ['hrms.leave-types.*'], 'can' => 'view leave-types', 'icon' => 'fa-solid fa-folder-open'],
-                    ['label' => 'Leave Requests', 'route' => 'hrms.leave-requests.index', 'match' => ['hrms.leave-requests.*'], 'can' => 'view leave-requests', 'icon' => 'fa-solid fa-file-circle-check'],
-                    ['label' => 'Payroll', 'route' => 'hrms.payrolls.index', 'match' => ['hrms.payrolls.*'], 'can' => 'view payrolls', 'icon' => 'fa-solid fa-chart-column'],
+                    ['label' => 'Employees', 'route' => 'hrms.employees.index', 'match' => ['hrms.employees.*'], 'can' => 'view employees', 'icon' => 'fas fa-briefcase'],
+                    ['label' => 'Attendance', 'route' => 'hrms.attendances.index', 'match' => ['hrms.attendances.*'], 'can' => 'view attendances', 'icon' => 'fas fa-calendar-check'],
+                    ['label' => 'Departments', 'route' => 'hrms.departments.index', 'match' => ['hrms.departments.*'], 'can' => 'view departments', 'icon' => 'fas fa-sitemap'],
+                    ['label' => 'Designations', 'route' => 'hrms.designations.index', 'match' => ['hrms.designations.*'], 'can' => 'view designations', 'icon' => 'fas fa-tags'],
+                    ['label' => 'Leave Types', 'route' => 'hrms.leave-types.index', 'match' => ['hrms.leave-types.*'], 'can' => 'view leave-types', 'icon' => 'fas fa-folder-open'],
+                    ['label' => 'Leave Requests', 'route' => 'hrms.leave-requests.index', 'match' => ['hrms.leave-requests.*'], 'can' => 'view leave-requests', 'icon' => 'fas fa-file-signature'],
+                    ['label' => 'Payroll', 'route' => 'hrms.payrolls.index', 'match' => ['hrms.payrolls.*'], 'can' => 'view payrolls', 'icon' => 'fas fa-chart-bar'],
                 ],
                 'Settings' => [
-                    ['label' => 'Categories', 'route' => 'settings.categories.index', 'match' => ['settings.categories.*'], 'can' => 'view categories', 'icon' => 'fa-solid fa-folder-tree'],
-                    ['label' => 'Item Masters', 'route' => 'settings.item-masters.index', 'match' => ['settings.item-masters.*'], 'can' => 'view item-masters', 'icon' => 'fa-solid fa-cubes'],
-                    ['label' => 'WhatsApp Templates', 'route' => 'settings.whats-app-templates.index', 'match' => ['settings.whats-app-templates.*'], 'can' => 'view whats-app-templates', 'icon' => 'fa-brands fa-whatsapp'],
-                    ['label' => 'Profile', 'route' => 'profile.edit', 'match' => ['profile.*'], 'can' => null, 'icon' => 'fa-solid fa-user-gear'],
+                    ['label' => 'Categories', 'route' => 'settings.categories.index', 'match' => ['settings.categories.*'], 'can' => 'view categories', 'icon' => 'fas fa-folder'],
+                    ['label' => 'Item Masters', 'route' => 'settings.item-masters.index', 'match' => ['settings.item-masters.*'], 'can' => 'view item-masters', 'icon' => 'fas fa-cubes'],
+                    ['label' => 'WhatsApp Templates', 'route' => 'settings.whats-app-templates.index', 'match' => ['settings.whats-app-templates.*'], 'can' => 'view whats-app-templates', 'icon' => 'fab fa-whatsapp'],
+                    ['label' => 'Profile', 'route' => 'profile.edit', 'match' => ['profile.*'], 'can' => null, 'icon' => 'fas fa-user-cog'],
                 ],
             ];
 
@@ -129,7 +129,6 @@
                             @foreach ($navigation as $group => $items)
                                 @php
                                     $visibleItems = collect($items)->filter(fn (array $item) => ! $item['can'] || auth()->user()->can($item['can']));
-                                    $groupActive = $visibleItems->contains(fn (array $item) => collect($item['match'])->contains(fn (string $pattern) => request()->routeIs($pattern)));
                                 @endphp
 
                                 @if ($visibleItems->isNotEmpty())

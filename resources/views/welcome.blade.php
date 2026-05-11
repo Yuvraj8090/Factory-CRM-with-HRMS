@@ -17,7 +17,7 @@
             <nav class="main-header navbar navbar-expand-md navbar-white navbar-light">
                 <div class="container">
                     <a href="{{ route('home') }}" class="navbar-brand">
-                        <span class="brand-text font-weight-light"><strong>Factory</strong> CRM</span>
+                    <span class="brand-text font-weight-light"><strong>Factory</strong> CRM</span>
                     </a>
 
                     <div class="ml-auto d-flex align-items-center">
@@ -50,7 +50,7 @@
                                         @else
                                             <a href="{{ route('login') }}" class="btn btn-light btn-lg mr-2 mb-2">Sign in</a>
                                             @if (Route::has('register'))
-                                                <a href="{{ route('register') }}" class="btn btn-outline-light btn-lg mb-2">Register</a>
+                                            <a href="{{ route('register') }}" class="btn btn-outline-light btn-lg mb-2">Register</a>
                                             @endif
                                         @endauth
                                     </div>

@@ -20,7 +20,7 @@
                     <a href="{{ route('home') }}" class="h3 text-white d-inline-block mb-0">
                         <b>Factory</b> CRM
                     </a>
-                    <p class="mb-0 mt-2 text-white-50">AdminLTE access portal for sales, finance, and HR teams.</p>
+                    <p class="mb-0 mt-2" style="color: rgba(255, 255, 255, 0.78);">AdminLTE access portal for sales, finance, and HR teams.</p>
                 </div>
                 <div class="card-body login-card-body p-4 p-md-5">
                     {{ $slot }}
