@@ -18,32 +18,32 @@
         @php
             $navigation = [
                 'CRM' => [
-                    ['label' => 'Dashboard', 'route' => 'dashboard', 'match' => ['dashboard'], 'can' => 'view dashboard'],
-                    ['label' => 'Leads', 'route' => 'crm.leads.index', 'match' => ['crm.leads.*'], 'can' => 'view leads'],
-                    ['label' => 'Activities', 'route' => 'crm.activities.index', 'match' => ['crm.activities.*'], 'can' => 'view activities'],
-                    ['label' => 'Customers', 'route' => 'crm.customers.index', 'match' => ['crm.customers.*'], 'can' => 'view customers'],
-                    ['label' => 'Sales Teams', 'route' => 'crm.sales-teams.index', 'match' => ['crm.sales-teams.*'], 'can' => 'view sales-teams'],
+                    ['label' => 'Dashboard', 'route' => 'dashboard', 'match' => ['dashboard'], 'can' => 'view dashboard', 'icon' => 'home'],
+                    ['label' => 'Leads', 'route' => 'crm.leads.index', 'match' => ['crm.leads.*'], 'can' => 'view leads', 'icon' => 'user-plus'],
+                    ['label' => 'Activities', 'route' => 'crm.activities.index', 'match' => ['crm.activities.*'], 'can' => 'view activities', 'icon' => 'clipboard'],
+                    ['label' => 'Customers', 'route' => 'crm.customers.index', 'match' => ['crm.customers.*'], 'can' => 'view customers', 'icon' => 'building'],
+                    ['label' => 'Sales Teams', 'route' => 'crm.sales-teams.index', 'match' => ['crm.sales-teams.*'], 'can' => 'view sales-teams', 'icon' => 'users'],
                 ],
                 'Finance' => [
-                    ['label' => 'Quotations', 'route' => 'finance.quotations.index', 'match' => ['finance.quotations.*'], 'can' => 'view quotations'],
-                    ['label' => 'Invoices', 'route' => 'finance.invoices.index', 'match' => ['finance.invoices.*'], 'can' => 'view invoices'],
-                    ['label' => 'Payments', 'route' => 'finance.payments.index', 'match' => ['finance.payments.*'], 'can' => 'view payments'],
-                    ['label' => 'Debit Notes', 'route' => 'finance.debit-notes.index', 'match' => ['finance.debit-notes.*'], 'can' => 'view debit-notes'],
+                    ['label' => 'Quotations', 'route' => 'finance.quotations.index', 'match' => ['finance.quotations.*'], 'can' => 'view quotations', 'icon' => 'document'],
+                    ['label' => 'Invoices', 'route' => 'finance.invoices.index', 'match' => ['finance.invoices.*'], 'can' => 'view invoices', 'icon' => 'receipt'],
+                    ['label' => 'Payments', 'route' => 'finance.payments.index', 'match' => ['finance.payments.*'], 'can' => 'view payments', 'icon' => 'currency'],
+                    ['label' => 'Debit Notes', 'route' => 'finance.debit-notes.index', 'match' => ['finance.debit-notes.*'], 'can' => 'view debit-notes', 'icon' => 'document'],
                 ],
                 'HRMS' => [
-                    ['label' => 'Employees', 'route' => 'hrms.employees.index', 'match' => ['hrms.employees.*'], 'can' => 'view employees'],
-                    ['label' => 'Attendance', 'route' => 'hrms.attendances.index', 'match' => ['hrms.attendances.*'], 'can' => 'view attendances'],
-                    ['label' => 'Departments', 'route' => 'hrms.departments.index', 'match' => ['hrms.departments.*'], 'can' => 'view departments'],
-                    ['label' => 'Designations', 'route' => 'hrms.designations.index', 'match' => ['hrms.designations.*'], 'can' => 'view designations'],
-                    ['label' => 'Leave Types', 'route' => 'hrms.leave-types.index', 'match' => ['hrms.leave-types.*'], 'can' => 'view leave-types'],
-                    ['label' => 'Leave Requests', 'route' => 'hrms.leave-requests.index', 'match' => ['hrms.leave-requests.*'], 'can' => 'view leave-requests'],
-                    ['label' => 'Payroll', 'route' => 'hrms.payrolls.index', 'match' => ['hrms.payrolls.*'], 'can' => 'view payrolls'],
+                    ['label' => 'Employees', 'route' => 'hrms.employees.index', 'match' => ['hrms.employees.*'], 'can' => 'view employees', 'icon' => 'briefcase'],
+                    ['label' => 'Attendance', 'route' => 'hrms.attendances.index', 'match' => ['hrms.attendances.*'], 'can' => 'view attendances', 'icon' => 'calendar'],
+                    ['label' => 'Departments', 'route' => 'hrms.departments.index', 'match' => ['hrms.departments.*'], 'can' => 'view departments', 'icon' => 'building'],
+                    ['label' => 'Designations', 'route' => 'hrms.designations.index', 'match' => ['hrms.designations.*'], 'can' => 'view designations', 'icon' => 'tag'],
+                    ['label' => 'Leave Types', 'route' => 'hrms.leave-types.index', 'match' => ['hrms.leave-types.*'], 'can' => 'view leave-types', 'icon' => 'folder'],
+                    ['label' => 'Leave Requests', 'route' => 'hrms.leave-requests.index', 'match' => ['hrms.leave-requests.*'], 'can' => 'view leave-requests', 'icon' => 'clipboard'],
+                    ['label' => 'Payroll', 'route' => 'hrms.payrolls.index', 'match' => ['hrms.payrolls.*'], 'can' => 'view payrolls', 'icon' => 'chart-bar'],
                 ],
                 'Settings' => [
-                    ['label' => 'Categories', 'route' => 'settings.categories.index', 'match' => ['settings.categories.*'], 'can' => 'view categories'],
-                    ['label' => 'Item Masters', 'route' => 'settings.item-masters.index', 'match' => ['settings.item-masters.*'], 'can' => 'view item-masters'],
-                    ['label' => 'WhatsApp Templates', 'route' => 'settings.whats-app-templates.index', 'match' => ['settings.whats-app-templates.*'], 'can' => 'view whats-app-templates'],
-                    ['label' => 'Profile', 'route' => 'profile.edit', 'match' => ['profile.*'], 'can' => null],
+                    ['label' => 'Categories', 'route' => 'settings.categories.index', 'match' => ['settings.categories.*'], 'can' => 'view categories', 'icon' => 'folder'],
+                    ['label' => 'Item Masters', 'route' => 'settings.item-masters.index', 'match' => ['settings.item-masters.*'], 'can' => 'view item-masters', 'icon' => 'cube'],
+                    ['label' => 'WhatsApp Templates', 'route' => 'settings.whats-app-templates.index', 'match' => ['settings.whats-app-templates.*'], 'can' => 'view whats-app-templates', 'icon' => 'chat'],
+                    ['label' => 'Profile', 'route' => 'profile.edit', 'match' => ['profile.*'], 'can' => null, 'icon' => 'cog'],
                 ],
             ];
 
@@ -124,10 +124,15 @@
                                         href="{{ route($item['route']) }}"
                                         class="{{ $active ? 'bg-gradient-to-r from-amber-400/20 via-orange-400/10 to-emerald-400/10 text-white shadow-inner shadow-amber-500/10 ring-1 ring-amber-400/30' : 'text-slate-300 hover:bg-slate-900 hover:text-white' }} flex items-center justify-between rounded-2xl px-4 py-3 text-sm font-medium transition"
                                     >
-                                        <span>{{ $item['label'] }}</span>
-                                        <span class="{{ $active ? 'bg-white/15 text-white' : 'bg-slate-800 text-slate-400' }} inline-flex h-8 min-w-8 items-center justify-center rounded-xl px-2 text-[11px] font-bold">
-                                            {{ strtoupper(substr($item['label'], 0, 2)) }}
+                                        <span class="flex items-center gap-3">
+                                            <span class="{{ $active ? 'bg-white/15 text-white' : 'bg-slate-800 text-slate-400' }} inline-flex h-8 w-8 items-center justify-center rounded-xl">
+                                                <x-crud.icon :name="$item['icon']" class="h-4 w-4" />
+                                            </span>
+                                            <span>{{ $item['label'] }}</span>
                                         </span>
+                                        <svg class="h-4 w-4 {{ $active ? 'text-white' : 'text-slate-500' }}" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M7.22 14.78a.75.75 0 0 1 0-1.06L10.94 10 7.22 6.28a.75.75 0 1 1 1.06-1.06l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0Z" clip-rule="evenodd" />
+                                        </svg>
                                     </a>
                                 @endforeach
                             </div>
@@ -152,9 +157,7 @@
 
                             <div>
                                 <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">Food Processing Factory CRM</p>
-                                <div class="mt-1 text-xl font-bold text-slate-950">
-                                    {{ isset($header) ? strip_tags((string) $header) : 'Operations Dashboard' }}
-                                </div>
+                                <div class="mt-1 text-xl font-bold text-slate-950">Operations Control Center</div>
                             </div>
                         </div>
 
