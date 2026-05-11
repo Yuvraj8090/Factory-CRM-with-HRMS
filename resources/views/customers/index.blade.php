@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <x-crud.page-header
-            eyebrow="CRM Workspace"
+           
             title="Customers"
-            description="Manage account profiles, credit controls, and billing readiness for converted business."
+           
             :action-url="route('crm.customers.create')"
             action-label="Add New Customer"
         />

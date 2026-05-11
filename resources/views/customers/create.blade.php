@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <x-crud.page-header
-            eyebrow="CRM Workspace"
+            
             title="Create Customer"
-            description="Set up a clean commercial account profile for invoicing, collections, and support."
+          
             :back-url="route('crm.customers.index')"
-            back-label="Back to Customers"
+           
         />
     </x-slot>
 

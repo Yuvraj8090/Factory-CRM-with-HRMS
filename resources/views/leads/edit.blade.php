@@ -8,9 +8,9 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <p class="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">CRM Workspace</p>
+               
                 <h1 class="mt-2 text-3xl font-bold text-slate-950">Edit Lead</h1>
-                <p class="mt-2 text-sm text-slate-600">Update prospect details, ownership, and commercial notes without losing pipeline context.</p>
+               
             </div>
             <a href="{{ route('crm.leads.show', $lead) }}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
                 Back to Lead

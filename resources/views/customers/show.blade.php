@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <x-crud.page-header
-            eyebrow="CRM Workspace"
+           
             :title="$customer->name"
-            description="Customer account snapshot with commercial history, contact context, and account controls."
+           
             :back-url="route('crm.customers.index')"
-            back-label="Back to Customers"
+           
         >
             <a href="{{ route('crm.customers.edit', $customer) }}" class="inline-flex items-center justify-center rounded-2xl bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">Edit Customer</a>
         </x-crud.page-header>

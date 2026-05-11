@@ -2,9 +2,8 @@
     <x-slot name="header">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <p class="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">CRM Workspace</p>
                 <h1 class="mt-2 text-3xl font-bold text-slate-950">Lead Management</h1>
-                <p class="mt-2 text-sm text-slate-600">Track enquiry flow, ownership, and conversion readiness across the sales pipeline.</p>
+                
             </div>
             <a
                 href="{{ route('crm.leads.create') }}"

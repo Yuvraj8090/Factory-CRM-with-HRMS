@@ -2,11 +2,9 @@
     <x-slot name="header">
         <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
             <div>
-                <p class="text-sm font-semibold uppercase tracking-[0.22em] text-slate-500">Executive Snapshot</p>
+                
                 <h1 class="mt-2 text-3xl font-bold text-slate-950">Factory Performance Dashboard</h1>
-                <p class="mt-2 max-w-2xl text-sm text-slate-600">
-                    A live operating view of pipeline, receivables, workforce attendance, and production-facing customer health.
-                </p>
+               
             </div>
             <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
                 <span class="font-semibold">Today:</span> {{ now()->format('l, d M Y') }}
