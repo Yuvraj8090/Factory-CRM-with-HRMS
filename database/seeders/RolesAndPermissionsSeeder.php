@@ -60,6 +60,25 @@ class RolesAndPermissionsSeeder extends Seeder
         $superAdmin = Role::findOrCreate('Super Admin', 'web');
         $superAdmin->syncPermissions($allPermissions);
 
+        $adminPermissions = array_values(array_diff($allPermissions, ['manage roles and permissions']));
+        Role::findOrCreate('Admin', 'web')->syncPermissions($adminPermissions);
+
+        $managerPermissions = [
+            'view dashboard',
+            'view activities',
+            'create activities',
+            'update activities',
+            'view leads',
+            'view customers',
+            'view quotations',
+            'view invoices',
+            'view payments',
+            'view employees',
+            'view attendances',
+            'view leave-requests',
+        ];
+        Role::findOrCreate('Manager', 'web')->syncPermissions($managerPermissions);
+
         $hrManagerPermissions = [
             'view dashboard',
             'view attendances',
@@ -92,6 +111,7 @@ class RolesAndPermissionsSeeder extends Seeder
         ];
 
         Role::findOrCreate('HR Manager', 'web')->syncPermissions($hrManagerPermissions);
+        Role::findOrCreate('HR', 'web')->syncPermissions($hrManagerPermissions);
 
         $salesLeadPermissions = [
             'view dashboard',
@@ -149,5 +169,13 @@ class RolesAndPermissionsSeeder extends Seeder
         ];
 
         Role::findOrCreate('Sales Rep', 'web')->syncPermissions($salesRepPermissions);
+
+        $staffPermissions = [
+            'view dashboard',
+            'view attendances',
+            'create leave-requests',
+            'view leave-requests',
+        ];
+        Role::findOrCreate('Staff', 'web')->syncPermissions($staffPermissions);
     }
 }

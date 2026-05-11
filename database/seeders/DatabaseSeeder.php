@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             ActivityDataSeeder::class,
             StateGstSeeder::class,
             RolesAndPermissionsSeeder::class,
+            UserSeeder::class,
         ]);
     }
 }

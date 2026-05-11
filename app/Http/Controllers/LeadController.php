@@ -16,11 +16,13 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class LeadController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
         $leads = Lead::with(['stage', 'assignedTo', 'assignedTeam', 'convertedCustomer'])
             ->when($request->filled('lead_stage_id'), fn ($query) => $query->where('lead_stage_id', $request->integer('lead_stage_id')))
@@ -29,19 +31,37 @@ class LeadController extends Controller
             ->latest()
             ->paginate($request->integer('per_page', 15));
 
+        if (! $request->expectsJson()) {
+            return view('leads.index', compact('leads'));
+        }
+
         return response()->json($leads);
     }
 
-    public function create(): JsonResponse
+    public function create(Request $request): JsonResponse|View
     {
+        $leadStages = LeadStage::query()->orderBy('stage_order')->get();
+        $users = User::query()->select('id', 'name')->orderBy('name')->get();
+        $salesTeams = SalesTeam::active()->select('id', 'name')->orderBy('name')->get();
+
+        if (! $request->expectsJson()) {
+            return view('leads.create', [
+                'stages' => $leadStages,
+                'lead_stages' => $leadStages,
+                'users' => $users,
+                'salesTeams' => $salesTeams,
+                'sales_teams' => $salesTeams,
+            ]);
+        }
+
         return response()->json([
-            'lead_stages' => LeadStage::query()->orderBy('stage_order')->get(),
-            'users' => User::query()->select('id', 'name')->orderBy('name')->get(),
-            'sales_teams' => SalesTeam::active()->select('id', 'name')->orderBy('name')->get(),
+            'lead_stages' => $leadStages,
+            'users' => $users,
+            'sales_teams' => $salesTeams,
         ]);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $data = $this->validateLead($request);
         $data['created_by'] = auth()->id();
@@ -49,34 +69,74 @@ class LeadController extends Controller
 
         $lead = Lead::create($data)->load(['stage', 'assignedTo', 'assignedTeam', 'convertedCustomer']);
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('crm.leads.show', $lead)
+                ->with('status', 'Lead created successfully.');
+        }
+
         return response()->json($lead, 201);
     }
 
-    public function show(Lead $lead): JsonResponse
+    public function show(Request $request, Lead $lead): JsonResponse|View
     {
-        return response()->json($lead->load(['stage', 'assignedTo', 'assignedTeam', 'convertedCustomer', 'activities.type', 'activities.status', 'emailLogs', 'whatsAppMessages.template']));
+        $lead->load(['stage', 'assignedTo', 'assignedTeam', 'convertedCustomer', 'activities.type', 'activities.status', 'emailLogs', 'whatsAppMessages.template']);
+
+        if (! $request->expectsJson()) {
+            return view('leads.show', compact('lead'));
+        }
+
+        return response()->json($lead);
     }
 
-    public function edit(Lead $lead): JsonResponse
+    public function edit(Request $request, Lead $lead): JsonResponse|View
     {
+        $lead->load(['stage', 'assignedTo', 'assignedTeam', 'convertedCustomer']);
+        $leadStages = LeadStage::query()->orderBy('stage_order')->get();
+        $users = User::query()->select('id', 'name')->orderBy('name')->get();
+        $salesTeams = SalesTeam::active()->select('id', 'name')->orderBy('name')->get();
+
+        if (! $request->expectsJson()) {
+            return view('leads.edit', [
+                'lead' => $lead,
+                'stages' => $leadStages,
+                'lead_stages' => $leadStages,
+                'users' => $users,
+                'salesTeams' => $salesTeams,
+                'sales_teams' => $salesTeams,
+            ]);
+        }
+
         return response()->json([
-            'lead' => $lead->load(['stage', 'assignedTo', 'assignedTeam', 'convertedCustomer']),
-            'lead_stages' => LeadStage::query()->orderBy('stage_order')->get(),
-            'users' => User::query()->select('id', 'name')->orderBy('name')->get(),
-            'sales_teams' => SalesTeam::active()->select('id', 'name')->orderBy('name')->get(),
+            'lead' => $lead,
+            'lead_stages' => $leadStages,
+            'users' => $users,
+            'sales_teams' => $salesTeams,
         ]);
     }
 
-    public function update(Request $request, Lead $lead): JsonResponse
+    public function update(Request $request, Lead $lead): JsonResponse|RedirectResponse
     {
         $lead->update($this->validateLead($request));
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('crm.leads.show', $lead)
+                ->with('status', 'Lead updated successfully.');
+        }
 
         return response()->json($lead->fresh()->load(['stage', 'assignedTo', 'assignedTeam', 'convertedCustomer']));
     }
 
-    public function destroy(Lead $lead): JsonResponse
+    public function destroy(Request $request, Lead $lead): JsonResponse|RedirectResponse
     {
         $lead->delete();
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('crm.leads.index')
+                ->with('status', 'Lead deleted successfully.');
+        }
 
         return response()->json(['message' => 'Lead deleted successfully.']);
     }
@@ -152,7 +212,7 @@ class LeadController extends Controller
         }, 'leads-export.csv');
     }
 
-    public function convert(Lead $lead): JsonResponse
+    public function convert(Request $request, Lead $lead): JsonResponse|RedirectResponse
     {
         $converted = DB::transaction(function () use ($lead) {
             $customer = Customer::create([
@@ -176,6 +236,12 @@ class LeadController extends Controller
 
             return $lead->fresh()->load('convertedCustomer');
         });
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('crm.leads.show', $lead)
+                ->with('status', 'Lead converted to customer successfully.');
+        }
 
         return response()->json($converted);
     }

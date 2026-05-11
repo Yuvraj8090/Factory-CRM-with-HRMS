@@ -7,34 +7,63 @@ use App\Models\Invoice;
 use App\Models\ItemMaster;
 use App\Models\Quotation;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class InvoiceController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
         $invoices = Invoice::with(['customer', 'quotation', 'items.item', 'payments', 'creator'])
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->string('search')->toString();
+
+                $query->where(function ($invoiceQuery) use ($search) {
+                    $invoiceQuery
+                        ->where('invoice_number', 'like', "%{$search}%")
+                        ->orWhereHas('customer', fn ($customerQuery) => $customerQuery
+                            ->where('name', 'like', "%{$search}%")
+                            ->orWhere('company_name', 'like', "%{$search}%"));
+                });
+            })
             ->when($request->filled('payment_status'), fn ($query) => $query->where('payment_status', $request->string('payment_status')))
             ->when($request->filled('invoice_status'), fn ($query) => $query->where('invoice_status', $request->string('invoice_status')))
             ->latest('invoice_date')
             ->paginate($request->integer('per_page', 15));
 
+        if (! $request->expectsJson()) {
+            return view('invoices.index', [
+                'invoices' => $invoices,
+                'paymentStatuses' => ['Pending', 'Partial', 'Paid'],
+                'invoiceStatuses' => ['Draft', 'Sent', 'Paid', 'Overdue', 'Cancelled'],
+            ]);
+        }
+
         return response()->json($invoices);
     }
 
-    public function create(): JsonResponse
+    public function create(Request $request): JsonResponse|View
     {
-        return response()->json([
+        $data = [
             'customers' => Customer::query()->select('id', 'name', 'company_name', 'state')->orderBy('name')->get(),
             'quotations' => Quotation::query()->select('id', 'quotation_number', 'customer_id')->orderByDesc('quotation_date')->get(),
             'items' => ItemMaster::active()->orderBy('item_name')->get(),
+            'paymentStatuses' => ['Pending', 'Partial', 'Paid'],
             'payment_statuses' => ['Pending', 'Partial', 'Paid'],
+            'invoiceStatuses' => ['Draft', 'Sent', 'Paid', 'Overdue', 'Cancelled'],
             'invoice_statuses' => ['Draft', 'Sent', 'Paid', 'Overdue', 'Cancelled'],
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('invoices.create', $data);
+        }
+
+        return response()->json($data);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $data = $this->validateInvoice($request);
 
@@ -64,27 +93,47 @@ class InvoiceController extends Controller
             return $invoice->load(['customer', 'quotation', 'items.item', 'payments', 'creator']);
         });
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('finance.invoices.show', $invoice)
+                ->with('status', 'Invoice created successfully.');
+        }
+
         return response()->json($invoice, 201);
     }
 
-    public function show(Invoice $invoice): JsonResponse
+    public function show(Request $request, Invoice $invoice): JsonResponse|View
     {
-        return response()->json($invoice->load(['customer', 'quotation', 'items.item', 'payments', 'debitNotes', 'creator']));
+        $invoice->load(['customer', 'quotation', 'items.item', 'payments', 'debitNotes', 'creator']);
+
+        if (! $request->expectsJson()) {
+            return view('invoices.show', compact('invoice'));
+        }
+
+        return response()->json($invoice);
     }
 
-    public function edit(Invoice $invoice): JsonResponse
+    public function edit(Request $request, Invoice $invoice): JsonResponse|View
     {
-        return response()->json([
+        $data = [
             'invoice' => $invoice->load(['customer', 'quotation', 'items.item', 'payments', 'creator']),
             'customers' => Customer::query()->select('id', 'name', 'company_name', 'state')->orderBy('name')->get(),
             'quotations' => Quotation::query()->select('id', 'quotation_number', 'customer_id')->orderByDesc('quotation_date')->get(),
             'items' => ItemMaster::active()->orderBy('item_name')->get(),
+            'paymentStatuses' => ['Pending', 'Partial', 'Paid'],
             'payment_statuses' => ['Pending', 'Partial', 'Paid'],
+            'invoiceStatuses' => ['Draft', 'Sent', 'Paid', 'Overdue', 'Cancelled'],
             'invoice_statuses' => ['Draft', 'Sent', 'Paid', 'Overdue', 'Cancelled'],
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('invoices.edit', $data);
+        }
+
+        return response()->json($data);
     }
 
-    public function update(Request $request, Invoice $invoice): JsonResponse
+    public function update(Request $request, Invoice $invoice): JsonResponse|RedirectResponse
     {
         $data = $this->validateInvoice($request, $invoice->id);
 
@@ -114,22 +163,44 @@ class InvoiceController extends Controller
             return $invoice->fresh()->load(['customer', 'quotation', 'items.item', 'payments', 'creator']);
         });
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('finance.invoices.show', $invoice)
+                ->with('status', 'Invoice updated successfully.');
+        }
+
         return response()->json($invoice);
     }
 
-    public function destroy(Invoice $invoice): JsonResponse
+    public function destroy(Request $request, Invoice $invoice): JsonResponse|RedirectResponse
     {
         $invoice->delete();
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('finance.invoices.index')
+                ->with('status', 'Invoice deleted successfully.');
+        }
 
         return response()->json(['message' => 'Invoice deleted successfully.']);
     }
 
-    public function fromQuotation(Quotation $quotation): JsonResponse
+    public function fromQuotation(Request $request, Quotation $quotation): JsonResponse|RedirectResponse
     {
-        return response()->json([
+        $data = [
             'quotation' => $quotation->load(['customer', 'items.item']),
             'suggested_invoice_number' => 'INV-' . now()->format('YmdHis'),
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('finance.invoices.create', [
+                    'quotation_id' => $quotation->id,
+                    'invoice_number' => $data['suggested_invoice_number'],
+                ]);
+        }
+
+        return response()->json($data);
     }
 
     protected function validateInvoice(Request $request, ?int $invoiceId = null): array

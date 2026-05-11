@@ -5,32 +5,60 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class AttendanceController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
         $attendance = Attendance::with(['employeeUser', 'creator'])
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->string('search')->toString();
+
+                $query->whereHas('employeeUser', fn ($userQuery) => $userQuery
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%"));
+            })
             ->when($request->filled('user_id'), fn ($query) => $query->where('user_id', $request->integer('user_id')))
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
+            ->when($request->filled('month'), function ($query) use ($request) {
+                [$year, $month] = explode('-', $request->string('month')->toString());
+                $query->forMonth((int) $year, (int) $month);
+            })
             ->latest('date')
             ->paginate($request->integer('per_page', 31));
+
+        if (! $request->expectsJson()) {
+            return view('attendances.index', [
+                'attendances' => $attendance,
+                'users' => User::query()->select('id', 'name')->orderBy('name')->get(),
+                'statuses' => ['Present', 'Absent', 'Late', 'Half Day', 'Leave'],
+            ]);
+        }
 
         return response()->json($attendance);
     }
 
-    public function create(): JsonResponse
+    public function create(Request $request): JsonResponse|View
     {
-        return response()->json([
+        $data = [
             'users' => User::query()->select('id', 'name')->orderBy('name')->get(),
-        ]);
+            'statuses' => ['Present', 'Absent', 'Late', 'Half Day', 'Leave'],
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('attendances.create', $data);
+        }
+
+        return response()->json($data);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $data = $this->validateAttendance($request);
         $data['created_by'] = auth()->id();
@@ -39,35 +67,66 @@ class AttendanceController extends Controller
         $attendance->calculateHours();
         $attendance->save();
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('hrms.attendances.show', $attendance)
+                ->with('status', 'Attendance saved successfully.');
+        }
+
         return response()->json($attendance->load(['employeeUser', 'creator']), 201);
     }
 
-    public function show(Attendance $attendance): JsonResponse
+    public function show(Request $request, Attendance $attendance): JsonResponse|View
     {
-        return response()->json($attendance->load(['employeeUser', 'creator']));
+        $attendance->load(['employeeUser', 'creator']);
+
+        if (! $request->expectsJson()) {
+            return view('attendances.show', compact('attendance'));
+        }
+
+        return response()->json($attendance);
     }
 
-    public function edit(Attendance $attendance): JsonResponse
+    public function edit(Request $request, Attendance $attendance): JsonResponse|View
     {
-        return response()->json([
+        $data = [
             'attendance' => $attendance->load(['employeeUser', 'creator']),
             'users' => User::query()->select('id', 'name')->orderBy('name')->get(),
-        ]);
+            'statuses' => ['Present', 'Absent', 'Late', 'Half Day', 'Leave'],
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('attendances.edit', $data);
+        }
+
+        return response()->json($data);
     }
 
-    public function update(Request $request, Attendance $attendance): JsonResponse
+    public function update(Request $request, Attendance $attendance): JsonResponse|RedirectResponse
     {
         $data = $this->validateAttendance($request, $attendance->id);
         $attendance->fill($data);
         $attendance->calculateHours();
         $attendance->save();
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('hrms.attendances.show', $attendance)
+                ->with('status', 'Attendance updated successfully.');
+        }
+
         return response()->json($attendance->fresh()->load(['employeeUser', 'creator']));
     }
 
-    public function destroy(Attendance $attendance): JsonResponse
+    public function destroy(Request $request, Attendance $attendance): JsonResponse|RedirectResponse
     {
         $attendance->delete();
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('hrms.attendances.index')
+                ->with('status', 'Attendance record archived successfully.');
+        }
 
         return response()->json(['message' => 'Attendance deleted successfully.']);
     }

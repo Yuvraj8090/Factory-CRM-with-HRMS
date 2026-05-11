@@ -18,9 +18,16 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuotationController;
 use App\Http\Controllers\SalesTeamController;
 use App\Http\Controllers\WhatsAppTemplateController;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/dashboard');
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+
+    return view('welcome');
+})->name('home');
 
 Route::view('/dashboard', 'dashboard')
     ->middleware(['auth'])
@@ -32,7 +39,7 @@ Route::middleware(['auth'])->group(function () {
     | CRM Routes
     |--------------------------------------------------------------------------
     */
-    Route::name('crm.')->group(function () {
+    Route::middleware('role_or_permission:Super Admin|Admin|Manager|Sales Lead|Sales Rep')->name('crm.')->group(function () {
         Route::post('leads/import', [LeadController::class, 'import'])->name('leads.import');
         Route::get('leads/export', [LeadController::class, 'export'])->name('leads.export');
         Route::post('leads/{lead}/convert', [LeadController::class, 'convert'])->name('leads.convert');
@@ -53,7 +60,7 @@ Route::middleware(['auth'])->group(function () {
     | Finance Routes
     |--------------------------------------------------------------------------
     */
-    Route::name('finance.')->group(function () {
+    Route::middleware('role_or_permission:Super Admin|Admin|Manager|Sales Lead|Sales Rep')->name('finance.')->group(function () {
         Route::get('quotations/{quotation}/build-invoice', [InvoiceController::class, 'fromQuotation'])->name('quotations.build-invoice');
         Route::resource('quotations', QuotationController::class);
         Route::resource('invoices', InvoiceController::class);
@@ -66,7 +73,7 @@ Route::middleware(['auth'])->group(function () {
     | HRMS Routes
     |--------------------------------------------------------------------------
     */
-    Route::name('hrms.')->group(function () {
+    Route::middleware('role_or_permission:Super Admin|Admin|HR Manager|HR|Manager|Staff')->name('hrms.')->group(function () {
         Route::post('attendances/import', [AttendanceController::class, 'import'])->name('attendances.import');
         Route::get('attendances/export', [AttendanceController::class, 'export'])->name('attendances.export');
         Route::resource('attendances', AttendanceController::class);
@@ -83,15 +90,15 @@ Route::middleware(['auth'])->group(function () {
     | Settings & Master Data Routes
     |--------------------------------------------------------------------------
     */
-    Route::name('settings.')->group(function () {
+    Route::middleware('role_or_permission:Super Admin|Admin|Manager')->name('settings.')->group(function () {
         Route::resource('categories', CategoryController::class);
         Route::resource('item-masters', ItemMasterController::class);
         Route::resource('whats-app-templates', WhatsAppTemplateController::class);
-
-        Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
+
+    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__ . '/auth.php';

@@ -6,32 +6,61 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Payment;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\View\View;
 
 class PaymentController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
         $payments = Payment::with(['invoice', 'customer', 'creator'])
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->string('search')->toString();
+
+                $query->where(function ($paymentQuery) use ($search) {
+                    $paymentQuery
+                        ->where('payment_number', 'like', "%{$search}%")
+                        ->orWhere('reference_number', 'like', "%{$search}%")
+                        ->orWhereHas('customer', fn ($customerQuery) => $customerQuery
+                            ->where('name', 'like', "%{$search}%")
+                            ->orWhere('company_name', 'like', "%{$search}%"));
+                });
+            })
             ->when($request->filled('customer_id'), fn ($query) => $query->where('customer_id', $request->integer('customer_id')))
             ->when($request->filled('payment_method'), fn ($query) => $query->where('payment_method', $request->string('payment_method')))
             ->latest('payment_date')
             ->paginate($request->integer('per_page', 15));
 
+        if (! $request->expectsJson()) {
+            return view('payments.index', [
+                'payments' => $payments,
+                'customers' => Customer::query()->select('id', 'name')->orderBy('name')->get(),
+                'paymentMethods' => ['Cash', 'Cheque', 'Bank Transfer', 'UPI', 'Credit Card', 'Debit Card', 'Wallet'],
+            ]);
+        }
+
         return response()->json($payments);
     }
 
-    public function create(): JsonResponse
+    public function create(Request $request): JsonResponse|View
     {
-        return response()->json([
+        $data = [
             'customers' => Customer::query()->select('id', 'name', 'company_name')->orderBy('name')->get(),
             'invoices' => Invoice::open()->select('id', 'invoice_number', 'customer_id', 'balance_due')->orderByDesc('invoice_date')->get(),
+            'paymentMethods' => ['Cash', 'Cheque', 'Bank Transfer', 'UPI', 'Credit Card', 'Debit Card', 'Wallet'],
             'payment_methods' => ['Cash', 'Cheque', 'Bank Transfer', 'UPI', 'Credit Card', 'Debit Card', 'Wallet'],
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('payments.create', $data);
+        }
+
+        return response()->json($data);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $data = $this->validatePayment($request);
 
@@ -45,25 +74,44 @@ class PaymentController extends Controller
             return $payment->load(['invoice', 'customer', 'creator']);
         });
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('finance.payments.show', $payment)
+                ->with('status', 'Payment captured successfully.');
+        }
+
         return response()->json($payment, 201);
     }
 
-    public function show(Payment $payment): JsonResponse
+    public function show(Request $request, Payment $payment): JsonResponse|View
     {
-        return response()->json($payment->load(['invoice', 'customer', 'creator']));
+        $payment->load(['invoice', 'customer', 'creator']);
+
+        if (! $request->expectsJson()) {
+            return view('payments.show', compact('payment'));
+        }
+
+        return response()->json($payment);
     }
 
-    public function edit(Payment $payment): JsonResponse
+    public function edit(Request $request, Payment $payment): JsonResponse|View
     {
-        return response()->json([
+        $data = [
             'payment' => $payment->load(['invoice', 'customer', 'creator']),
             'customers' => Customer::query()->select('id', 'name', 'company_name')->orderBy('name')->get(),
             'invoices' => Invoice::query()->select('id', 'invoice_number', 'customer_id', 'balance_due')->orderByDesc('invoice_date')->get(),
+            'paymentMethods' => ['Cash', 'Cheque', 'Bank Transfer', 'UPI', 'Credit Card', 'Debit Card', 'Wallet'],
             'payment_methods' => ['Cash', 'Cheque', 'Bank Transfer', 'UPI', 'Credit Card', 'Debit Card', 'Wallet'],
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('payments.edit', $data);
+        }
+
+        return response()->json($data);
     }
 
-    public function update(Request $request, Payment $payment): JsonResponse
+    public function update(Request $request, Payment $payment): JsonResponse|RedirectResponse
     {
         $data = $this->validatePayment($request, $payment->id);
 
@@ -79,16 +127,28 @@ class PaymentController extends Controller
             return $payment->fresh()->load(['invoice', 'customer', 'creator']);
         });
 
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('finance.payments.show', $payment)
+                ->with('status', 'Payment updated successfully.');
+        }
+
         return response()->json($payment);
     }
 
-    public function destroy(Payment $payment): JsonResponse
+    public function destroy(Request $request, Payment $payment): JsonResponse|RedirectResponse
     {
         DB::transaction(function () use ($payment) {
             $invoiceId = $payment->invoice_id;
             $payment->delete();
             $this->refreshInvoiceBalance(Invoice::findOrFail($invoiceId));
         });
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('finance.payments.index')
+                ->with('status', 'Payment deleted successfully.');
+        }
 
         return response()->json(['message' => 'Payment deleted successfully.']);
     }

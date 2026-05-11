@@ -7,66 +7,126 @@ use App\Models\EmailLog;
 use App\Models\WhatsAppMessage;
 use App\Models\WhatsAppTemplate;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\View\View;
 
 class CustomerController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
         $customers = Customer::withCount(['quotations', 'invoices', 'payments'])
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->string('search')->toString();
+
+                $query->where(function ($customerQuery) use ($search) {
+                    $customerQuery
+                        ->where('name', 'like', "%{$search}%")
+                        ->orWhere('company_name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('gst_number', 'like', "%{$search}%");
+                });
+            })
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
             ->when($request->filled('customer_type'), fn ($query) => $query->where('customer_type', $request->string('customer_type')))
             ->orderBy('name')
             ->paginate($request->integer('per_page', 15));
 
+        if (! $request->expectsJson()) {
+            return view('customers.index', [
+                'customers' => $customers,
+                'customerTypes' => ['retail', 'wholesale', 'institutional'],
+                'statuses' => ['Active', 'Inactive', 'Blocked'],
+            ]);
+        }
+
         return response()->json($customers);
     }
 
-    public function create(): JsonResponse
+    public function create(Request $request): JsonResponse|View
     {
-        return response()->json([
+        $data = [
+            'customerTypes' => ['retail', 'wholesale', 'institutional'],
             'customer_types' => ['retail', 'wholesale', 'institutional'],
             'statuses' => ['Active', 'Inactive', 'Blocked'],
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('customers.create', $data);
+        }
+
+        return response()->json($data);
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $customer = Customer::create($this->validateCustomer($request));
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('crm.customers.show', $customer)
+                ->with('status', 'Customer created successfully.');
+        }
 
         return response()->json($customer, 201);
     }
 
-    public function show(Customer $customer): JsonResponse
+    public function show(Request $request, Customer $customer): JsonResponse|View
     {
-        return response()->json($customer->load(['quotations.items', 'invoices.items', 'payments', 'emailLogs', 'whatsAppMessages.template']));
+        $customer->load(['quotations.items', 'invoices.items', 'payments', 'emailLogs', 'whatsAppMessages.template']);
+
+        if (! $request->expectsJson()) {
+            return view('customers.show', compact('customer'));
+        }
+
+        return response()->json($customer);
     }
 
-    public function edit(Customer $customer): JsonResponse
+    public function edit(Request $request, Customer $customer): JsonResponse|View
     {
-        return response()->json([
+        $data = [
             'customer' => $customer,
+            'customerTypes' => ['retail', 'wholesale', 'institutional'],
             'customer_types' => ['retail', 'wholesale', 'institutional'],
             'statuses' => ['Active', 'Inactive', 'Blocked'],
-        ]);
+        ];
+
+        if (! $request->expectsJson()) {
+            return view('customers.edit', $data);
+        }
+
+        return response()->json($data);
     }
 
-    public function update(Request $request, Customer $customer): JsonResponse
+    public function update(Request $request, Customer $customer): JsonResponse|RedirectResponse
     {
         $customer->update($this->validateCustomer($request, $customer->id));
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('crm.customers.show', $customer)
+                ->with('status', 'Customer updated successfully.');
+        }
 
         return response()->json($customer->fresh());
     }
 
-    public function destroy(Customer $customer): JsonResponse
+    public function destroy(Request $request, Customer $customer): JsonResponse|RedirectResponse
     {
         $customer->delete();
+
+        if (! $request->expectsJson()) {
+            return redirect()
+                ->route('crm.customers.index')
+                ->with('status', 'Customer deleted successfully.');
+        }
 
         return response()->json(['message' => 'Customer deleted successfully.']);
     }
 
-    public function sendEmail(Request $request, Customer $customer): JsonResponse
+    public function sendEmail(Request $request, Customer $customer): JsonResponse|RedirectResponse
     {
         abort_if(blank($customer->email), 422, 'Customer email is required to send an email.');
 
@@ -94,10 +154,16 @@ class CustomerController extends Controller
             $log->update(['status' => 'Failed', 'error_message' => $exception->getMessage()]);
         }
 
+        if (! $request->expectsJson()) {
+            return back()->with($log->status === 'Sent' ? 'status' : 'error', $log->status === 'Sent'
+                ? 'Email sent successfully.'
+                : 'Email could not be sent. Check the log for details.');
+        }
+
         return response()->json($log->fresh());
     }
 
-    public function sendWhatsApp(Request $request, Customer $customer): JsonResponse
+    public function sendWhatsApp(Request $request, Customer $customer): JsonResponse|RedirectResponse
     {
         abort_if(blank($customer->phone), 422, 'Customer phone number is required to send a WhatsApp message.');
 
@@ -116,6 +182,10 @@ class CustomerController extends Controller
             'status' => 'Queued',
             'created_by' => auth()->id(),
         ]);
+
+        if (! $request->expectsJson()) {
+            return back()->with('status', 'WhatsApp message queued successfully.');
+        }
 
         return response()->json($message->load('template'), 201);
     }
