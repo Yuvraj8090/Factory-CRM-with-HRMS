@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\Department;
 use App\Models\Designation;
 use Illuminate\Http\JsonResponse;
@@ -11,13 +12,26 @@ use Illuminate\View\View;
 
 class DesignationController extends Controller
 {
+    use BuildsDataTables;
+
     public function index(Request $request): JsonResponse|View
     {
-        $designations = Designation::with(['department', 'employees'])
+        $query = Designation::with(['department', 'employees'])
             ->withCount('employees')
             ->when($request->filled('department_id'), fn ($query) => $query->where('department_id', $request->integer('department_id')))
-            ->orderBy('name')
-            ->paginate($request->integer('per_page', 15));
+            ->orderBy('name');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('name', fn (Designation $designation) => $this->recordLink($designation->name, route('hrms.designations.show', $designation)))
+                ->addColumn('department_name', fn (Designation $designation) => e($designation->department?->name ?: 'Unassigned'))
+                ->addColumn('employees_total', fn (Designation $designation) => e((string) ($designation->employees_count ?? 0)))
+                ->addColumn('actions', fn (Designation $designation) => $this->actionButtons(route('hrms.designations.show', $designation), route('hrms.designations.edit', $designation)))
+                ->rawColumns(['name', 'actions'])
+                ->toJson();
+        }
+
+        $designations = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('designations.index', compact('designations'));

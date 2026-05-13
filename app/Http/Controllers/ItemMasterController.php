@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\Category;
 use App\Models\ItemMaster;
 use Illuminate\Http\JsonResponse;
@@ -11,13 +12,32 @@ use Illuminate\View\View;
 
 class ItemMasterController extends Controller
 {
+    use BuildsDataTables;
+
     public function index(Request $request): JsonResponse|View
     {
-        $items = ItemMaster::with('category')
+        $query = ItemMaster::with('category')
             ->when($request->boolean('active_only'), fn ($query) => $query->active())
             ->when($request->filled('category_id'), fn ($query) => $query->where('category_id', $request->integer('category_id')))
-            ->orderBy('item_name')
-            ->paginate($request->integer('per_page', 15));
+            ->orderBy('item_name');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('item_name', fn (ItemMaster $item) => $this->recordLink(
+                    $item->item_name,
+                    route('settings.item-masters.show', $item),
+                    [$item->item_code . ($item->unit ? ' • ' . $item->unit : '')]
+                ))
+                ->addColumn('category_name', fn (ItemMaster $item) => e($item->category?->name ?: 'Uncategorized'))
+                ->addColumn('gst_rate_display', fn (ItemMaster $item) => e(number_format((float) $item->gst_rate, 2) . '%'))
+                ->addColumn('sale_price_display', fn (ItemMaster $item) => e($this->money((float) $item->sale_price)))
+                ->addColumn('status_badge', fn (ItemMaster $item) => $this->statusBadge($item->is_active ? 'Active' : 'Inactive'))
+                ->addColumn('actions', fn (ItemMaster $item) => $this->actionButtons(route('settings.item-masters.show', $item), route('settings.item-masters.edit', $item)))
+                ->rawColumns(['item_name', 'status_badge', 'actions'])
+                ->toJson();
+        }
+
+        $items = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('item-masters.index', [

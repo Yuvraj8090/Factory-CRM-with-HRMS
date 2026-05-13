@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\ItemMaster;
@@ -14,6 +15,8 @@ use Illuminate\View\View;
 
 class InvoiceController extends Controller
 {
+    use BuildsDataTables;
+
     public function __construct()
     {
         $this->authorizeResource(Invoice::class, 'invoice');
@@ -21,7 +24,7 @@ class InvoiceController extends Controller
 
     public function index(Request $request): JsonResponse|View
     {
-        $invoices = Invoice::with(['customer', 'quotation', 'items.item', 'payments', 'creator'])
+        $query = Invoice::with(['customer', 'quotation', 'items.item', 'payments', 'creator'])
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
 
@@ -35,8 +38,26 @@ class InvoiceController extends Controller
             })
             ->when($request->filled('payment_status'), fn ($query) => $query->where('payment_status', $request->string('payment_status')))
             ->when($request->filled('invoice_status'), fn ($query) => $query->where('invoice_status', $request->string('invoice_status')))
-            ->latest('invoice_date')
-            ->paginate($request->integer('per_page', 15));
+            ->latest('invoice_date');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('invoice_number', fn (Invoice $invoice) => $this->recordLink(
+                    $invoice->invoice_number,
+                    route('finance.invoices.show', $invoice),
+                    [optional($invoice->invoice_date)->format('d M Y')]
+                ))
+                ->addColumn('customer_name', fn (Invoice $invoice) => e($invoice->customer?->name ?: 'Unknown customer'))
+                ->addColumn('due_date_display', fn (Invoice $invoice) => e(optional($invoice->due_date)->format('d M Y') ?: 'Not set'))
+                ->addColumn('invoice_status_badge', fn (Invoice $invoice) => $this->statusBadge($invoice->invoice_status))
+                ->addColumn('payment_status_badge', fn (Invoice $invoice) => $this->statusBadge($invoice->payment_status))
+                ->addColumn('total_display', fn (Invoice $invoice) => e($this->money((float) $invoice->total)))
+                ->addColumn('actions', fn (Invoice $invoice) => $this->actionButtons(route('finance.invoices.show', $invoice), route('finance.invoices.edit', $invoice)))
+                ->rawColumns(['invoice_number', 'invoice_status_badge', 'payment_status_badge', 'actions'])
+                ->toJson();
+        }
+
+        $invoices = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('invoices.index', [

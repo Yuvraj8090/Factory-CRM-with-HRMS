@@ -3,12 +3,12 @@
         <x-crud.page-header title="Quotations" description="Track customer offers, their commercial status, and the proposals most likely to convert into revenue." icon="document" :breadcrumbs="[['label' => 'Finance'], ['label' => 'Quotations']]" :action-url="route('finance.quotations.create')" action-label="Create Quotation" />
     </x-slot>
     <section class="app-card">
-        <form method="GET" class="grid gap-4 border-b border-slate-200 px-6 py-5 lg:grid-cols-[220px_auto]">
+        <form id="quotations-filters" method="GET" data-local-storage-form="quotations.filters" data-local-storage-clear-on-submit="false" class="grid gap-4 border-b border-slate-200 px-6 py-5 lg:grid-cols-[220px_auto]">
             <div><x-input-label for="status" value="Status" /><select id="status" name="status" class="mt-2 block w-full rounded-2xl border-slate-200 text-sm shadow-sm"><option value="">All statuses</option>@foreach (($statuses ?? ['Draft', 'Sent', 'Accepted', 'Rejected', 'Expired']) as $status)<option value="{{ $status }}" @selected(request('status') === $status)>{{ $status }}</option>@endforeach</select></div>
             <div class="flex items-end"><button type="submit" class="btn btn-primary btn-block">Apply Filters</button></div>
         </form>
         <div class="overflow-x-auto">
-            <table class="table table-hover app-data-table text-sm">
+            <table id="quotations-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('finance.quotations.index') }}" data-datatable-filter-form="#quotations-filters" data-datatable-storage-key="quotations" data-datatable-columns='@json([["data"=>"quotation_number","name"=>"quotation_number"],["data"=>"customer_name","name"=>"customer.name","searchable"=>false],["data"=>"quotation_date_display","name"=>"quotation_date"],["data"=>"status_badge","name"=>"status","orderable"=>false,"searchable"=>false],["data"=>"total_display","name"=>"total"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"><tr><th class="px-6 py-4">Quotation</th><th class="px-6 py-4">Customer</th><th class="px-6 py-4">Date</th><th class="px-6 py-4">Status</th><th class="px-6 py-4">Total</th><th class="px-6 py-4 text-right">Actions</th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($quotations as $quotation)
@@ -26,6 +26,6 @@
                 </tbody>
             </table>
         </div>
-        <div class="border-t border-slate-200 px-6 py-4">{{ $quotations->withQueryString()->links() }}</div>
+        <div class="border-t border-slate-200 px-6 py-4" data-pagination-wrapper>{{ $quotations->withQueryString()->links() }}</div>
     </section>
 </x-app-layout>

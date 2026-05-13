@@ -2,21 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
+    use BuildsDataTables;
+
     public function index(Request $request): JsonResponse|View
     {
-        $categories = Category::with(['parent', 'children', 'items'])
+        $query = Category::with(['parent', 'children', 'items'])
             ->withCount('items')
             ->when($request->boolean('active_only'), fn ($query) => $query->active())
-            ->orderBy('name')
-            ->paginate($request->integer('per_page', 15));
+            ->orderBy('name');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('name', fn (Category $category) => $this->recordLink(
+                    $category->name,
+                    route('settings.categories.show', $category),
+                    [Str::limit($category->description ?: 'No category description added yet.', 80)]
+                ))
+                ->addColumn('parent_name', fn (Category $category) => e($category->parent?->name ?: 'Top-level'))
+                ->addColumn('items_total', fn (Category $category) => e((string) ($category->items_count ?? 0)))
+                ->addColumn('status_badge', fn (Category $category) => $this->statusBadge($category->is_active ? 'Active' : 'Inactive'))
+                ->addColumn('actions', fn (Category $category) => $this->actionButtons(route('settings.categories.show', $category), route('settings.categories.edit', $category)))
+                ->rawColumns(['name', 'status_badge', 'actions'])
+                ->toJson();
+        }
+
+        $categories = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('categories.index', compact('categories'));

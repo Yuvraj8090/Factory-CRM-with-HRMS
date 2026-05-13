@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\Customer;
 use App\Models\ItemMaster;
 use App\Models\Quotation;
@@ -13,14 +14,33 @@ use Illuminate\View\View;
 
 class QuotationController extends Controller
 {
+    use BuildsDataTables;
+
     public function index(Request $request): JsonResponse|View
     {
         $statuses = ['Draft', 'Sent', 'Accepted', 'Rejected', 'Expired'];
 
-        $quotations = Quotation::with(['customer', 'items.item', 'creator'])
+        $query = Quotation::with(['customer', 'items.item', 'creator'])
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
-            ->latest('quotation_date')
-            ->paginate($request->integer('per_page', 15));
+            ->latest('quotation_date');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('quotation_number', fn (Quotation $quotation) => $this->recordLink(
+                    $quotation->quotation_number,
+                    route('finance.quotations.show', $quotation),
+                    [optional($quotation->valid_until)->format('d M Y') ? 'Valid until ' . optional($quotation->valid_until)->format('d M Y') : 'No validity date set']
+                ))
+                ->addColumn('customer_name', fn (Quotation $quotation) => e($quotation->customer?->name ?: 'Unknown customer'))
+                ->addColumn('quotation_date_display', fn (Quotation $quotation) => e(optional($quotation->quotation_date)->format('d M Y')))
+                ->addColumn('status_badge', fn (Quotation $quotation) => $this->statusBadge($quotation->status))
+                ->addColumn('total_display', fn (Quotation $quotation) => e($this->money((float) $quotation->total)))
+                ->addColumn('actions', fn (Quotation $quotation) => $this->actionButtons(route('finance.quotations.show', $quotation), route('finance.quotations.edit', $quotation)))
+                ->rawColumns(['quotation_number', 'status_badge', 'actions'])
+                ->toJson();
+        }
+
+        $quotations = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('quotations.index', compact('quotations', 'statuses'));

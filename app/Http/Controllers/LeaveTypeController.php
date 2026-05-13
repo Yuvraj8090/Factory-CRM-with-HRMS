@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\LeaveType;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -10,11 +11,25 @@ use Illuminate\View\View;
 
 class LeaveTypeController extends Controller
 {
+    use BuildsDataTables;
+
     public function index(Request $request): JsonResponse|View
     {
-        $leaveTypes = LeaveType::withCount('leaveRequests')
-            ->orderBy('name')
-            ->paginate($request->integer('per_page', 15));
+        $query = LeaveType::withCount('leaveRequests')
+            ->orderBy('name');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('name', fn (LeaveType $leaveType) => $this->recordLink($leaveType->name, route('hrms.leave-types.show', $leaveType)))
+                ->addColumn('leave_days', fn (LeaveType $leaveType) => e((string) $leaveType->leave_days_per_year))
+                ->addColumn('paid_status', fn (LeaveType $leaveType) => $this->statusBadge($leaveType->is_paid ? 'Paid' : 'Unpaid'))
+                ->addColumn('requests_total', fn (LeaveType $leaveType) => e((string) ($leaveType->leave_requests_count ?? 0)))
+                ->addColumn('actions', fn (LeaveType $leaveType) => $this->actionButtons(route('hrms.leave-types.show', $leaveType), route('hrms.leave-types.edit', $leaveType)))
+                ->rawColumns(['name', 'paid_status', 'actions'])
+                ->toJson();
+        }
+
+        $leaveTypes = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('leave-types.index', compact('leaveTypes'));

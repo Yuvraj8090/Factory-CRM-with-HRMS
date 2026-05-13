@@ -4,7 +4,7 @@
     </x-slot>
 
     <section class="app-card">
-        <form method="GET" class="grid gap-4 border-b border-slate-200 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_240px_240px_auto]">
+        <form id="payments-filters" method="GET" data-local-storage-form="payments.filters" data-local-storage-clear-on-submit="false" class="grid gap-4 border-b border-slate-200 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_240px_240px_auto]">
             <div><x-input-label for="search" value="Search" /><x-text-input id="search" name="search" type="text" class="mt-2 block w-full rounded-2xl border-slate-200" :value="request('search')" placeholder="Payment, reference, or customer..." /></div>
             <div><x-input-label for="customer_id" value="Customer" /><select id="customer_id" name="customer_id" class="mt-2 block w-full rounded-2xl border-slate-200 text-sm shadow-sm"><option value="">All customers</option>@foreach ($customers as $customer)<option value="{{ $customer->id }}" @selected((string) request('customer_id') === (string) $customer->id)>{{ $customer->name }}</option>@endforeach</select></div>
             <div><x-input-label for="payment_method" value="Method" /><select id="payment_method" name="payment_method" class="mt-2 block w-full rounded-2xl border-slate-200 text-sm shadow-sm"><option value="">All methods</option>@foreach ($paymentMethods as $method)<option value="{{ $method }}" @selected(request('payment_method') === $method)>{{ $method }}</option>@endforeach</select></div>
@@ -12,7 +12,7 @@
         </form>
 
         <div class="overflow-x-auto">
-            <table class="table table-hover app-data-table text-sm">
+            <table id="payments-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('finance.payments.index') }}" data-datatable-filter-form="#payments-filters" data-datatable-storage-key="payments" data-datatable-columns='@json([["data"=>"payment_number","name"=>"payment_number"],["data"=>"customer_name","name"=>"customer.name","searchable"=>false],["data"=>"invoice_number","name"=>"invoice.invoice_number","searchable"=>false],["data"=>"payment_method_display","name"=>"payment_method"],["data"=>"amount_display","name"=>"amount"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"><tr><th class="px-6 py-4">Payment</th><th class="px-6 py-4">Customer</th><th class="px-6 py-4">Invoice</th><th class="px-6 py-4">Method</th><th class="px-6 py-4">Amount</th><th class="px-6 py-4 text-right">Actions</th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($payments as $payment)
@@ -30,6 +30,6 @@
                 </tbody>
             </table>
         </div>
-        <div class="border-t border-slate-200 px-6 py-4">{{ $payments->withQueryString()->links() }}</div>
+        <div class="border-t border-slate-200 px-6 py-4" data-pagination-wrapper>{{ $payments->withQueryString()->links() }}</div>
     </section>
 </x-app-layout>

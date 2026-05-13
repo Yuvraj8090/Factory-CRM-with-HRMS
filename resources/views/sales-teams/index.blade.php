@@ -5,7 +5,7 @@
 
     <section class="app-card">
         <div class="overflow-x-auto">
-            <table class="table table-hover app-data-table text-sm">
+            <table id="sales-teams-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('crm.sales-teams.index') }}" data-datatable-storage-key="sales-teams" data-datatable-columns='@json([["data"=>"name","name"=>"name"],["data"=>"team_lead_name","name"=>"teamLead.name","searchable"=>false],["data"=>"members_total","name"=>"members_count"],["data"=>"leads_total","name"=>"leads_count"],["data"=>"status_badge","name"=>"is_active","orderable"=>false,"searchable"=>false],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                     <tr>
                         <th class="px-6 py-4">Team</th>
@@ -35,6 +35,6 @@
                 </tbody>
             </table>
         </div>
-        <div class="border-t border-slate-200 px-6 py-4">{{ $teams->withQueryString()->links() }}</div>
+        <div class="border-t border-slate-200 px-6 py-4" data-pagination-wrapper>{{ $teams->withQueryString()->links() }}</div>
     </section>
 </x-app-layout>

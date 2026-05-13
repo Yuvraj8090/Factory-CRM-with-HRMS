@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\WhatsAppTemplate;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -10,12 +11,30 @@ use Illuminate\View\View;
 
 class WhatsAppTemplateController extends Controller
 {
+    use BuildsDataTables;
+
     public function index(Request $request): JsonResponse|View
     {
-        $templates = WhatsAppTemplate::withCount('messages')
+        $query = WhatsAppTemplate::withCount('messages')
             ->when($request->boolean('active_only'), fn ($query) => $query->active())
-            ->orderBy('template_name')
-            ->paginate($request->integer('per_page', 15));
+            ->orderBy('template_name');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('template_name', fn (WhatsAppTemplate $template) => $this->recordLink(
+                    $template->template_name,
+                    route('settings.whats-app-templates.show', $template),
+                    [$template->template_id]
+                ))
+                ->addColumn('category_name', fn (WhatsAppTemplate $template) => e($template->category ?: 'Uncategorized'))
+                ->addColumn('messages_total', fn (WhatsAppTemplate $template) => e((string) ($template->messages_count ?? 0)))
+                ->addColumn('status_badge', fn (WhatsAppTemplate $template) => $this->statusBadge($template->is_active ? 'Active' : 'Inactive'))
+                ->addColumn('actions', fn (WhatsAppTemplate $template) => $this->actionButtons(route('settings.whats-app-templates.show', $template), route('settings.whats-app-templates.edit', $template)))
+                ->rawColumns(['template_name', 'status_badge', 'actions'])
+                ->toJson();
+        }
+
+        $templates = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('whats-app-templates.index', compact('templates'));

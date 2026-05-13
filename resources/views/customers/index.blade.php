@@ -11,7 +11,7 @@
 
     <div class="space-y-6">
         <section class="app-card">
-            <form method="GET" class="grid gap-4 border-b border-slate-200 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_220px_220px_auto]">
+            <form id="customers-filters" method="GET" data-local-storage-form="customers.filters" data-local-storage-clear-on-submit="false" class="grid gap-4 border-b border-slate-200 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_220px_220px_auto]">
                 <div>
                     <x-input-label for="search" value="Search" />
                     <x-text-input id="search" name="search" type="text" class="mt-2 block w-full rounded-2xl border-slate-200" :value="request('search')" placeholder="Customer, company, GST, phone..." />
@@ -40,7 +40,7 @@
             </form>
 
             <div class="overflow-x-auto">
-                <table class="table table-hover app-data-table text-sm">
+                <table id="customers-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('crm.customers.index') }}" data-datatable-filter-form="#customers-filters" data-datatable-storage-key="customers" data-datatable-columns='@json([["data"=>"name","name"=>"name"],["data"=>"customer_type_display","name"=>"customer_type"],["data"=>"status_badge","name"=>"status","orderable"=>false,"searchable"=>false],["data"=>"invoices_total","name"=>"invoices_count"],["data"=>"credit_limit_display","name"=>"credit_limit"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
                     <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                         <tr>
                             <th class="px-6 py-4">Customer</th>
@@ -79,7 +79,7 @@
                 </table>
             </div>
 
-            <div class="border-t border-slate-200 px-6 py-4">
+            <div class="border-t border-slate-200 px-6 py-4" data-pagination-wrapper>
                 {{ $customers->withQueryString()->links() }}
             </div>
         </section>

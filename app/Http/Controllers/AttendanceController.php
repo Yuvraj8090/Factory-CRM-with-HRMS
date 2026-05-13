@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\Attendance;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -14,6 +15,8 @@ use Illuminate\View\View;
 
 class AttendanceController extends Controller
 {
+    use BuildsDataTables;
+
     public function __construct()
     {
         $this->authorizeResource(Attendance::class, 'attendance');
@@ -21,7 +24,7 @@ class AttendanceController extends Controller
 
     public function index(Request $request): JsonResponse|View
     {
-        $attendance = Attendance::with(['employeeUser', 'creator'])
+        $query = Attendance::with(['employeeUser', 'creator'])
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
 
@@ -35,8 +38,24 @@ class AttendanceController extends Controller
                 [$year, $month] = explode('-', $request->string('month')->toString());
                 $query->forMonth((int) $year, (int) $month);
             })
-            ->latest('date')
-            ->paginate($request->integer('per_page', 31));
+            ->latest('date');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->addColumn('employee_name', fn (Attendance $attendance) => $this->recordLink(
+                    $attendance->employeeUser?->name ?? 'Unknown user',
+                    route('hrms.attendances.show', $attendance)
+                ))
+                ->addColumn('date_display', fn (Attendance $attendance) => e(optional($attendance->date)->format('d M Y')))
+                ->addColumn('shift_display', fn (Attendance $attendance) => e(($attendance->check_in ?: '--:--') . ' to ' . ($attendance->check_out ?: '--:--')))
+                ->addColumn('hours_display', fn (Attendance $attendance) => e(number_format((float) $attendance->work_hours, 2) . ' hrs'))
+                ->addColumn('status_badge', fn (Attendance $attendance) => $this->statusBadge($attendance->status))
+                ->addColumn('actions', fn (Attendance $attendance) => $this->actionButtons(route('hrms.attendances.show', $attendance), route('hrms.attendances.edit', $attendance)))
+                ->rawColumns(['employee_name', 'status_badge', 'actions'])
+                ->toJson();
+        }
+
+        $attendance = (clone $query)->paginate($request->integer('per_page', 31));
 
         if (! $request->expectsJson()) {
             return view('attendances.index', [

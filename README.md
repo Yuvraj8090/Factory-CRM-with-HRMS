@@ -1,59 +1,344 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Factory CRM with HRMS
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Factory CRM with HRMS is a Laravel 12 application that combines sales, finance, and HR workflows in one server-rendered web app. The project includes CRM records such as leads, activities, customers, quotations, invoices, and payments, alongside HRMS modules for employees, attendance, leave, and payroll.
 
-## About Laravel
+This version adds:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- server-side Yajra DataTables on every index/listing screen
+- an activity workflow with Step 1 → Step 2 → Step 3 guidance
+- localStorage-backed workflow, filter, and draft persistence
+- inline activity status changes with AJAX and audit logging
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Project Overview
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+The application is organized around four workspaces:
 
-## Learning Laravel
+- `CRM`: leads, activities, customers, sales teams
+- `Finance`: quotations, invoices, payments, debit notes
+- `HRMS`: employees, attendance, departments, designations, leave, payroll
+- `Settings`: categories, item masters, WhatsApp templates
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+The main operational table for workflow/status management is the `Activities` screen. Users can create activities through a guided 3-step form, optionally skip schedule details, and later update status directly from the index table without leaving the page.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-## Laravel Sponsors
+### 1. Clone and install dependencies
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+```bash
+git clone <repository-url>
+cd Factory-CRM-with-HRMS
+composer install
+npm install
+```
 
-### Premium Partners
+### 2. Environment setup
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-## Contributing
+Update `.env` with your database, mail, and app settings.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 3. Database setup
 
-## Code of Conduct
+```bash
+php artisan migrate
+php artisan db:seed
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+If you prefer a clean local setup from scratch:
 
-## Security Vulnerabilities
+```bash
+php artisan migrate:fresh --seed
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 4. Start the application
 
-## License
+For local development:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+composer run dev
+```
+
+For a production asset build:
+
+```bash
+npm run build
+```
+
+## Database Migrations
+
+Important tables include:
+
+- `leads`
+- `activities`
+- `activity_statuses`
+- `activity_status_logs`
+- `customers`
+- `quotations`
+- `invoices`
+- `payments`
+- `employees`
+- `attendances`
+- `leave_requests`
+- `payroll_periods`
+
+The `activity_status_logs` table stores every inline status change with:
+
+- `activity_id`
+- `from_status_id`
+- `to_status_id`
+- `changed_by`
+- `changed_at`
+
+## Feature Guide
+
+### 1. Guided workflow and navigation
+
+The activity create/edit form uses a 3-step structure:
+
+1. `Step 1: Choose Lead`
+2. `Step 2: Add Schedule`
+3. `Step 3: Review & Save`
+
+Workflow behavior:
+
+- every step has a labeled action button
+- the progress bar shows current step position
+- Step 2 is optional and includes a `Skip This Optional Step` button
+- helper copy explains what each button does
+- activity draft data is preserved in localStorage until submit
+
+### 2. localStorage implementation
+
+Shared browser persistence is available on every page through `window.AppLocalStore`.
+
+Supported operations:
+
+- `save(key, value)`
+- `get(key, fallback)`
+- `update(key, valueOrCallback)`
+- `remove(key)`
+- `clearNamespace(prefix)`
+
+Current usage:
+
+- activity form draft persistence
+- activity workflow step persistence
+- DataTable filter persistence
+- lightweight session/last-visited page sync
+
+Error handling:
+
+- localStorage calls are wrapped in `try/catch`
+- failures emit an `app-local-storage-error` browser event
+- the layout shows a warning message if persistence fails
+
+### 3. Yajra DataTables
+
+All listing/index views now use Yajra DataTables in server-side mode. The first page is still rendered by Blade so the screen remains usable before JavaScript enhancement finishes.
+
+Server-side DataTables are enabled for:
+
+- leads
+- activities
+- customers
+- sales teams
+- quotations
+- invoices
+- payments
+- debit notes
+- employees
+- attendance
+- departments
+- designations
+- leave types
+- leave requests
+- payrolls
+- categories
+- item masters
+- WhatsApp templates
+
+DataTable behavior:
+
+- sorting is handled on the server
+- searching is handled on the server
+- pagination is handled on the server
+- filters are sent with the DataTables AJAX request
+- table refresh happens automatically after inline activity status updates
+
+### 4. Status management
+
+The `Activities` index includes a dedicated inline status dropdown.
+
+How it works:
+
+- clicking the status badge opens a dropdown menu
+- choosing a new status sends an AJAX `PATCH` request
+- the row refreshes through DataTables without a full page reload
+- the status change is recorded in `activity_status_logs`
+- the UI shows the latest status-change timestamp
+
+Default activity statuses are seeded by `ActivityDataSeeder`:
+
+- `Pending`
+- `In Progress`
+- `Completed`
+- `Cancelled`
+- `Rescheduled`
+
+### 5. Index route/controller configuration
+
+Each resource keeps its standard Laravel `index` action, but now supports two modes:
+
+- normal request: returns the Blade view and initial server-rendered records
+- DataTables request: returns Yajra JSON for server-side rendering
+
+The main status-aware index is:
+
+- `GET /activities` mapped to `ActivityController@index`
+
+Inline status update endpoint:
+
+- `PATCH /activities/{activity}/status` mapped to `ActivityController@updateStatus`
+
+## API and Route Reference
+
+### Workflow and status endpoints
+
+- `GET /activities`: activities list view and DataTable JSON source
+- `PATCH /activities/{activity}/status`: inline activity status update
+
+### Core CRUD resource endpoints
+
+- `crm.leads.*`
+- `crm.activities.*`
+- `crm.customers.*`
+- `crm.sales-teams.*`
+- `finance.quotations.*`
+- `finance.invoices.*`
+- `finance.payments.*`
+- `finance.debit-notes.*`
+- `hrms.employees.*`
+- `hrms.attendances.*`
+- `hrms.departments.*`
+- `hrms.designations.*`
+- `hrms.leave-types.*`
+- `hrms.leave-requests.*`
+- `hrms.payrolls.*`
+- `settings.categories.*`
+- `settings.item-masters.*`
+- `settings.whats-app-templates.*`
+
+### Purpose of the main custom endpoints
+
+- `crm.leads.import`: import leads from file
+- `crm.leads.export`: export lead data
+- `crm.leads.convert`: convert a lead into a customer
+- `crm.activities.update-status`: change activity status inline
+- `crm.customers.send-email`: log and send customer email
+- `crm.customers.send-whatsapp`: queue WhatsApp message
+- `hrms.attendances.import`: import attendance
+- `hrms.attendances.export`: export attendance
+- `hrms.payrolls.submit-review`: move payroll into review
+- `hrms.payrolls.approve`: approve payroll
+
+## Frontend Workflow Explanation
+
+### Activity creation flow
+
+1. User opens `Activities > Add Activity`.
+2. Step 1 captures lead, owner, type, status, subject, and description.
+3. Step 2 optionally captures due date and completion time.
+4. User can skip Step 2 and continue directly to Step 3.
+5. Step 3 explains the save action and submits to Laravel.
+6. On success, Laravel redirects to the activity detail page.
+
+### Activity status update flow
+
+1. User opens the `Activities` index.
+2. User clicks the status badge in the status column.
+3. A dropdown shows available statuses.
+4. Selecting a status sends an AJAX request to the server.
+5. The server updates the record and inserts a log entry.
+6. The DataTable refreshes the row without reloading the page.
+
+### Filter persistence flow
+
+1. User applies filters on a list page.
+2. Filter values are stored in localStorage.
+3. On refresh or revisit, the filter form is restored.
+4. The DataTable reloads using the restored filter state.
+
+## Verification Checklist
+
+The implementation has been validated with:
+
+- `php artisan test`
+- `npm run build`
+- `php artisan migrate --pretend`
+
+What to manually verify in the browser:
+
+- activity create flow from Step 1 to Step 3
+- optional step skip behavior
+- activity draft persistence after refresh
+- filter persistence on list screens
+- inline activity status changes
+- DataTables sorting, searching, and pagination
+- CRUD redirects after create/update/delete operations
+
+## Troubleshooting
+
+### DataTable loads but rows do not refresh
+
+- confirm the route returns JSON when the request includes DataTables parameters such as `draw`, `start`, and `length`
+- confirm `APP_URL` and authentication session configuration are correct
+- check the browser console for AJAX or localStorage warnings
+
+### localStorage data is not saved
+
+- verify the browser is not in a restricted/private mode blocking storage
+- confirm the page shows no `Saved data warning`
+- clear keys starting with `factory-crm.` and retry
+
+### Migrations fail
+
+- verify database credentials in `.env`
+- make sure all required base tables have been migrated before seeding
+- run `php artisan migrate:fresh --seed` in local development if the schema is out of sync
+
+### Activity status change fails
+
+- confirm the authenticated user can access the CRM routes
+- verify `activity_statuses` has seeded data
+- verify the `activity_status_logs` migration has run
+
+### Frontend assets look outdated
+
+- run `npm install`
+- run `npm run build`
+- clear Laravel caches with `php artisan optimize:clear`
+
+## Testing
+
+Run the test suite with:
+
+```bash
+php artisan test
+```
+
+Key coverage includes:
+
+- customer HTML create flow
+- payroll generation and approval flow
+- activity inline status update logging
+- activity DataTable server response
+
+## Notes for Developers
+
+- All DataTables use server-side Yajra responses from the existing controller `index` methods.
+- The JavaScript entry point is `resources/js/app.js`.
+- Shared local storage helpers are exposed through `window.AppLocalStore`.
+- The activity workflow state is stored under the `factory-crm.workflow.*` namespace.

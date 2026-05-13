@@ -4,7 +4,7 @@
     </x-slot>
 
     <section class="app-card">
-        <form method="GET" class="grid gap-4 border-b border-slate-200 px-6 py-5 lg:grid-cols-[220px_auto]">
+        <form id="payrolls-filters" method="GET" data-local-storage-form="payrolls.filters" data-local-storage-clear-on-submit="false" class="grid gap-4 border-b border-slate-200 px-6 py-5 lg:grid-cols-[220px_auto]">
             <div>
                 <x-input-label for="year" value="Payroll Year" />
                 <select id="year" name="year" class="mt-2 block w-full rounded-2xl border-slate-200 text-sm shadow-sm">
@@ -18,7 +18,7 @@
         </form>
 
         <div class="overflow-x-auto">
-            <table class="table table-hover app-data-table text-sm">
+            <table id="payrolls-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('hrms.payrolls.index') }}" data-datatable-filter-form="#payrolls-filters" data-datatable-storage-key="payrolls" data-datatable-columns='@json([["data"=>"name","name"=>"name"],["data"=>"period_display","name"=>"period_start"],["data"=>"employees_total","name"=>"items_count"],["data"=>"status_badge","name"=>"status","orderable"=>false,"searchable"=>false],["data"=>"net_total_display","name"=>"total_net"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"><tr><th class="px-6 py-4">Payroll Run</th><th class="px-6 py-4">Period</th><th class="px-6 py-4">Employees</th><th class="px-6 py-4">Status</th><th class="px-6 py-4">Net Total</th><th class="px-6 py-4 text-right">Actions</th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($payrolls as $payroll)
@@ -36,6 +36,6 @@
                 </tbody>
             </table>
         </div>
-        <div class="border-t border-slate-200 px-6 py-4">{{ $payrolls->withQueryString()->links() }}</div>
+        <div class="border-t border-slate-200 px-6 py-4" data-pagination-wrapper>{{ $payrolls->withQueryString()->links() }}</div>
     </section>
 </x-app-layout>

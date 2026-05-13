@@ -4,7 +4,7 @@
     </x-slot>
 
     <section class="app-card">
-        <form method="GET" class="grid gap-4 border-b border-slate-200 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_260px_auto]">
+        <form id="employees-filters" method="GET" data-local-storage-form="employees.filters" data-local-storage-clear-on-submit="false" class="grid gap-4 border-b border-slate-200 px-6 py-5 lg:grid-cols-[minmax(0,1fr)_260px_auto]">
             <div>
                 <x-input-label for="search" value="Search" />
                 <x-text-input id="search" name="search" type="text" class="mt-2 block w-full rounded-2xl border-slate-200" :value="request('search')" placeholder="Employee code, name, or email..." />
@@ -24,7 +24,7 @@
         </form>
 
         <div class="overflow-x-auto">
-            <table class="table table-hover app-data-table text-sm">
+            <table id="employees-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('hrms.employees.index') }}" data-datatable-filter-form="#employees-filters" data-datatable-storage-key="employees" data-datatable-columns='@json([["data"=>"employee_name","name"=>"user.name","searchable"=>false],["data"=>"department_name","name"=>"department.name","searchable"=>false],["data"=>"designation_name","name"=>"designation.name","searchable"=>false],["data"=>"joined_at","name"=>"date_of_joining"],["data"=>"salary_display","name"=>"salary"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                     <tr>
                         <th class="px-6 py-4">Employee</th>
@@ -61,6 +61,6 @@
             </table>
         </div>
 
-        <div class="border-t border-slate-200 px-6 py-4">{{ $employees->withQueryString()->links() }}</div>
+        <div class="border-t border-slate-200 px-6 py-4" data-pagination-wrapper>{{ $employees->withQueryString()->links() }}</div>
     </section>
 </x-app-layout>

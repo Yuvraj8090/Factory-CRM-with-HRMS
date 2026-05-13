@@ -4,7 +4,7 @@
     </x-slot>
     <section class="app-card">
         <div class="overflow-x-auto">
-            <table class="table table-hover app-data-table text-sm">
+            <table id="departments-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('hrms.departments.index') }}" data-datatable-storage-key="departments" data-datatable-columns='@json([["data"=>"name","name"=>"name"],["data"=>"designations_total","name"=>"designations_count"],["data"=>"employees_total","name"=>"employees_count"],["data"=>"status_badge","name"=>"is_active","orderable"=>false,"searchable"=>false],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                     <tr><th class="px-6 py-4">Department</th><th class="px-6 py-4">Designations</th><th class="px-6 py-4">Employees</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-right">Actions</th></tr>
                 </thead>
@@ -23,6 +23,6 @@
                 </tbody>
             </table>
         </div>
-        <div class="border-t border-slate-200 px-6 py-4">{{ $departments->withQueryString()->links() }}</div>
+        <div class="border-t border-slate-200 px-6 py-4" data-pagination-wrapper>{{ $departments->withQueryString()->links() }}</div>
     </section>
 </x-app-layout>

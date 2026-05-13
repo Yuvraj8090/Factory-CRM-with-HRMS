@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\LeaveRequest;
 use App\Models\LeaveType;
 use App\Models\User;
@@ -13,6 +14,8 @@ use Illuminate\View\View;
 
 class LeaveRequestController extends Controller
 {
+    use BuildsDataTables;
+
     public function __construct()
     {
         $this->authorizeResource(LeaveRequest::class, 'leave_request');
@@ -20,7 +23,7 @@ class LeaveRequestController extends Controller
 
     public function index(Request $request): JsonResponse|View
     {
-        $leaveRequests = LeaveRequest::with(['user', 'leaveType', 'approver'])
+        $query = LeaveRequest::with(['user', 'leaveType', 'approver'])
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
 
@@ -29,8 +32,24 @@ class LeaveRequestController extends Controller
                     ->orWhere('email', 'like', "%{$search}%"));
             })
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
-            ->latest('start_date')
-            ->paginate($request->integer('per_page', 15));
+            ->latest('start_date');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->addColumn('employee_name', fn (LeaveRequest $leaveRequest) => $this->recordLink(
+                    $leaveRequest->user?->name ?? 'Unknown user',
+                    route('hrms.leave-requests.show', $leaveRequest)
+                ))
+                ->addColumn('leave_type_name', fn (LeaveRequest $leaveRequest) => e($leaveRequest->leaveType?->name ?: 'Not set'))
+                ->addColumn('dates_display', fn (LeaveRequest $leaveRequest) => e(optional($leaveRequest->start_date)->format('d M Y') . ' to ' . optional($leaveRequest->end_date)->format('d M Y')))
+                ->addColumn('days_total', fn (LeaveRequest $leaveRequest) => e(number_format((float) $leaveRequest->total_days, 2)))
+                ->addColumn('status_badge', fn (LeaveRequest $leaveRequest) => $this->statusBadge($leaveRequest->status))
+                ->addColumn('actions', fn (LeaveRequest $leaveRequest) => $this->actionButtons(route('hrms.leave-requests.show', $leaveRequest), route('hrms.leave-requests.edit', $leaveRequest)))
+                ->rawColumns(['employee_name', 'status_badge', 'actions'])
+                ->toJson();
+        }
+
+        $leaveRequests = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('leave-requests.index', [

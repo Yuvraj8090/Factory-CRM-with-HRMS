@@ -255,8 +255,38 @@
             </div>
         </div>
 
+        <div id="app-feedback" class="position-fixed top-0 end-0 p-3" style="z-index: 1080; max-width: 360px;"></div>
+
         <!-- Bootstrap 5 JS Bundle (includes Popper.js for dropdowns) -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                window.AppLocalStore?.update('session', {
+                    userId: @json($user?->id),
+                    userName: @json($userName),
+                    currentRoute: @json(optional(request()->route())->getName()),
+                    currentUrl: window.location.pathname,
+                    syncedAt: new Date().toISOString(),
+                });
+            });
+
+            window.addEventListener('app-local-storage-error', (event) => {
+                const container = document.getElementById('app-feedback');
+
+                if (!container || !event.detail?.message) {
+                    return;
+                }
+
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-warning shadow-sm border-0 mb-2';
+                alert.innerHTML = `<strong>Saved data warning:</strong> ${event.detail.message}`;
+                container.appendChild(alert);
+
+                window.setTimeout(() => {
+                    alert.remove();
+                }, 4500);
+            });
+        </script>
         
         @stack('scripts')
     </body>

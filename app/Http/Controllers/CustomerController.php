@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\Customer;
 use App\Models\EmailLog;
 use App\Models\WhatsAppMessage;
@@ -10,10 +11,13 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class CustomerController extends Controller
 {
+    use BuildsDataTables;
+
     public function __construct()
     {
         $this->authorizeResource(Customer::class, 'customer');
@@ -21,7 +25,7 @@ class CustomerController extends Controller
 
     public function index(Request $request): JsonResponse|View
     {
-        $customers = Customer::withCount(['quotations', 'invoices', 'payments'])
+        $query = Customer::withCount(['quotations', 'invoices', 'payments'])
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
 
@@ -36,8 +40,28 @@ class CustomerController extends Controller
             })
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
             ->when($request->filled('customer_type'), fn ($query) => $query->where('customer_type', $request->string('customer_type')))
-            ->orderBy('name')
-            ->paginate($request->integer('per_page', 15));
+            ->orderBy('name');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('name', fn (Customer $customer) => $this->recordLink(
+                    $customer->name,
+                    route('crm.customers.show', $customer),
+                    [
+                        $customer->company_name ?: 'Direct account',
+                        ($customer->email ?: 'No email') . ($customer->phone ? ' • ' . $customer->phone : ''),
+                    ]
+                ))
+                ->addColumn('customer_type_display', fn (Customer $customer) => e(Str::title($customer->customer_type)))
+                ->addColumn('status_badge', fn (Customer $customer) => $this->statusBadge($customer->status))
+                ->addColumn('invoices_total', fn (Customer $customer) => e((string) $customer->invoices_count))
+                ->addColumn('credit_limit_display', fn (Customer $customer) => e($this->money((float) $customer->credit_limit)))
+                ->addColumn('actions', fn (Customer $customer) => $this->actionButtons(route('crm.customers.show', $customer), route('crm.customers.edit', $customer)))
+                ->rawColumns(['name', 'status_badge', 'actions'])
+                ->toJson();
+        }
+
+        $customers = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('customers.index', [

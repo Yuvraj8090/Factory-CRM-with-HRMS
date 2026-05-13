@@ -2,22 +2,43 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\SalesTeam;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class SalesTeamController extends Controller
 {
+    use BuildsDataTables;
+
     public function index(Request $request): JsonResponse|View
     {
-        $teams = SalesTeam::with(['teamLead', 'members', 'leads'])
+        $query = SalesTeam::with(['teamLead', 'members', 'leads'])
             ->withCount(['members', 'leads'])
             ->when($request->boolean('active_only'), fn ($query) => $query->active())
-            ->orderBy('name')
-            ->paginate($request->integer('per_page', 15));
+            ->orderBy('name');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('name', fn (SalesTeam $team) => $this->recordLink(
+                    $team->name,
+                    route('crm.sales-teams.show', $team),
+                    [Str::limit($team->description ?: 'No team description added yet.', 90)]
+                ))
+                ->addColumn('team_lead_name', fn (SalesTeam $team) => e($team->teamLead?->name ?: 'Not assigned'))
+                ->addColumn('members_total', fn (SalesTeam $team) => e((string) ($team->members_count ?? 0)))
+                ->addColumn('leads_total', fn (SalesTeam $team) => e((string) ($team->leads_count ?? 0)))
+                ->addColumn('status_badge', fn (SalesTeam $team) => $this->statusBadge($team->is_active ? 'Active' : 'Inactive'))
+                ->addColumn('actions', fn (SalesTeam $team) => $this->actionButtons(route('crm.sales-teams.show', $team), route('crm.sales-teams.edit', $team)))
+                ->rawColumns(['name', 'status_badge', 'actions'])
+                ->toJson();
+        }
+
+        $teams = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('sales-teams.index', compact('teams'));

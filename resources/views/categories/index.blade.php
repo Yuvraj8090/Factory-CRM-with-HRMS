@@ -4,7 +4,7 @@
     </x-slot>
     <section class="app-card">
         <div class="overflow-x-auto">
-            <table class="table table-hover app-data-table text-sm">
+            <table id="categories-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('settings.categories.index') }}" data-datatable-storage-key="categories" data-datatable-columns='@json([["data"=>"name","name"=>"name"],["data"=>"parent_name","name"=>"parent.name","searchable"=>false],["data"=>"items_total","name"=>"items_count"],["data"=>"status_badge","name"=>"is_active","orderable"=>false,"searchable"=>false],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"><tr><th class="px-6 py-4">Category</th><th class="px-6 py-4">Parent</th><th class="px-6 py-4">Items</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-right">Actions</th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($categories as $category)
@@ -21,6 +21,6 @@
                 </tbody>
             </table>
         </div>
-        <div class="border-t border-slate-200 px-6 py-4">{{ $categories->withQueryString()->links() }}</div>
+        <div class="border-t border-slate-200 px-6 py-4" data-pagination-wrapper>{{ $categories->withQueryString()->links() }}</div>
     </section>
 </x-app-layout>

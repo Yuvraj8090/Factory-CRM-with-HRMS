@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\Customer;
 use App\Models\EmailLog;
 use App\Models\Lead;
@@ -17,19 +18,42 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class LeadController extends Controller
 {
+    use BuildsDataTables;
+
     public function index(Request $request): JsonResponse|View
     {
-        $leads = Lead::with(['stage', 'assignedTo', 'assignedTeam', 'convertedCustomer'])
+        $query = Lead::with(['stage', 'assignedTo', 'assignedTeam', 'convertedCustomer'])
             ->when($request->filled('lead_stage_id'), fn ($query) => $query->where('lead_stage_id', $request->integer('lead_stage_id')))
             ->when($request->filled('assigned_to'), fn ($query) => $query->where('assigned_to', $request->integer('assigned_to')))
             ->when($request->boolean('open_only'), fn ($query) => $query->open())
-            ->latest()
-            ->paginate($request->integer('per_page', 15));
+            ->latest();
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('name', fn (Lead $lead) => $this->recordLink(
+                    $lead->name,
+                    route('crm.leads.show', $lead),
+                    [
+                        $lead->company_name ?: 'Individual Buyer',
+                        ($lead->email ?: 'No email') . ($lead->phone ? ' • ' . $lead->phone : ''),
+                    ]
+                ))
+                ->addColumn('stage_badge', fn (Lead $lead) => $this->statusBadge($lead->stage?->name ?? 'Unassigned'))
+                ->addColumn('assigned_rep', fn (Lead $lead) => e($lead->assignedTo?->name ?: 'Unassigned'))
+                ->addColumn('lead_source_display', fn (Lead $lead) => e($lead->lead_source ?: 'Manual'))
+                ->addColumn('location_display', fn (Lead $lead) => e(collect([$lead->city, $lead->state, $lead->country])->filter()->implode(', ') ?: 'Not provided'))
+                ->addColumn('actions', fn (Lead $lead) => $this->actionButtons(route('crm.leads.show', $lead), route('crm.leads.edit', $lead)))
+                ->rawColumns(['name', 'stage_badge', 'actions'])
+                ->toJson();
+        }
+
+        $leads = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('leads.index', compact('leads'));

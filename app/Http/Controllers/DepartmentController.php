@@ -2,20 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\Department;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class DepartmentController extends Controller
 {
+    use BuildsDataTables;
+
     public function index(Request $request): JsonResponse|View
     {
-        $departments = Department::withCount(['designations', 'employees'])
+        $query = Department::withCount(['designations', 'employees'])
             ->when($request->boolean('active_only'), fn ($query) => $query->active())
-            ->orderBy('name')
-            ->paginate($request->integer('per_page', 15));
+            ->orderBy('name');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('name', fn (Department $department) => $this->recordLink(
+                    $department->name,
+                    route('hrms.departments.show', $department),
+                    [Str::limit($department->description ?: 'No department description added yet.', 80)]
+                ))
+                ->addColumn('designations_total', fn (Department $department) => e((string) $department->designations_count))
+                ->addColumn('employees_total', fn (Department $department) => e((string) $department->employees_count))
+                ->addColumn('status_badge', fn (Department $department) => $this->statusBadge($department->is_active ? 'Active' : 'Inactive'))
+                ->addColumn('actions', fn (Department $department) => $this->actionButtons(route('hrms.departments.show', $department), route('hrms.departments.edit', $department)))
+                ->rawColumns(['name', 'status_badge', 'actions'])
+                ->toJson();
+        }
+
+        $departments = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('departments.index', compact('departments'));

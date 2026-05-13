@@ -10,7 +10,7 @@
         />
     </x-slot>
 
-    <form action="{{ route('crm.activities.store') }}" method="POST">
+    <form action="{{ route('crm.activities.store') }}" method="POST" data-local-storage-form="activities.create">
         @csrf
         @include('activities._form')
     </form>

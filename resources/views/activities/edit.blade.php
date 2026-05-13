@@ -10,7 +10,7 @@
         />
     </x-slot>
 
-    <form action="{{ route('crm.activities.update', $activity) }}" method="POST">
+    <form action="{{ route('crm.activities.update', $activity) }}" method="POST" data-local-storage-form="activities.edit.{{ $activity->id }}">
         @csrf
         @method('PUT')
         @include('activities._form')

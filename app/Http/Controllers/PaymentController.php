@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Payment;
@@ -13,6 +14,8 @@ use Illuminate\View\View;
 
 class PaymentController extends Controller
 {
+    use BuildsDataTables;
+
     public function __construct()
     {
         $this->authorizeResource(Payment::class, 'payment');
@@ -20,7 +23,7 @@ class PaymentController extends Controller
 
     public function index(Request $request): JsonResponse|View
     {
-        $payments = Payment::with(['invoice', 'customer', 'creator'])
+        $query = Payment::with(['invoice', 'customer', 'creator'])
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
 
@@ -35,8 +38,28 @@ class PaymentController extends Controller
             })
             ->when($request->filled('customer_id'), fn ($query) => $query->where('customer_id', $request->integer('customer_id')))
             ->when($request->filled('payment_method'), fn ($query) => $query->where('payment_method', $request->string('payment_method')))
-            ->latest('payment_date')
-            ->paginate($request->integer('per_page', 15));
+            ->latest('payment_date');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('payment_number', fn (Payment $payment) => $this->recordLink(
+                    $payment->payment_number,
+                    route('finance.payments.show', $payment),
+                    [
+                        optional($payment->payment_date)->format('d M Y'),
+                        $payment->reference_number ?: 'No reference',
+                    ]
+                ))
+                ->addColumn('customer_name', fn (Payment $payment) => e($payment->customer?->name ?: 'Unknown customer'))
+                ->addColumn('invoice_number', fn (Payment $payment) => e($payment->invoice?->invoice_number ?: 'Unknown invoice'))
+                ->addColumn('payment_method_display', fn (Payment $payment) => e($payment->payment_method))
+                ->addColumn('amount_display', fn (Payment $payment) => e($this->money((float) $payment->amount)))
+                ->addColumn('actions', fn (Payment $payment) => $this->actionButtons(route('finance.payments.show', $payment), route('finance.payments.edit', $payment)))
+                ->rawColumns(['payment_number', 'actions'])
+                ->toJson();
+        }
+
+        $payments = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('payments.index', [

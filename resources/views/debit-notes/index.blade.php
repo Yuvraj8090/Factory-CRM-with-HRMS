@@ -4,7 +4,7 @@
     </x-slot>
     <section class="app-card">
         <div class="overflow-x-auto">
-            <table class="table table-hover app-data-table text-sm">
+            <table id="debit-notes-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('finance.debit-notes.index') }}" data-datatable-storage-key="debit-notes" data-datatable-columns='@json([["data"=>"debit_note_number","name"=>"debit_note_number"],["data"=>"customer_name","name"=>"customer.name","searchable"=>false],["data"=>"invoice_number","name"=>"invoice.invoice_number","searchable"=>false],["data"=>"status_badge","name"=>"status","orderable"=>false,"searchable"=>false],["data"=>"total_display","name"=>"total"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"><tr><th class="px-6 py-4">Debit Note</th><th class="px-6 py-4">Customer</th><th class="px-6 py-4">Invoice</th><th class="px-6 py-4">Status</th><th class="px-6 py-4">Total</th><th class="px-6 py-4 text-right">Actions</th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($debitNotes as $debitNote)
@@ -22,6 +22,6 @@
                 </tbody>
             </table>
         </div>
-        <div class="border-t border-slate-200 px-6 py-4">{{ $debitNotes->withQueryString()->links() }}</div>
+        <div class="border-t border-slate-200 px-6 py-4" data-pagination-wrapper>{{ $debitNotes->withQueryString()->links() }}</div>
     </section>
 </x-app-layout>

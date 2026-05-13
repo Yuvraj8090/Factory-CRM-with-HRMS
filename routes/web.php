@@ -48,6 +48,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('leads/{lead}/send-whatsapp', [LeadController::class, 'sendWhatsApp'])->name('leads.send-whatsapp');
         Route::resource('leads', LeadController::class);
 
+        Route::patch('activities/{activity}/status', [ActivityController::class, 'updateStatus'])->name('activities.update-status');
         Route::resource('activities', ActivityController::class);
         Route::resource('sales-teams', SalesTeamController::class);
 

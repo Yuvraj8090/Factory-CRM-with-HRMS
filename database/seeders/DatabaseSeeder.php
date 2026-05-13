@@ -81,6 +81,7 @@ class DatabaseSeeder extends Seeder
             'quotations',
             'item_masters',
             'categories',
+            'activity_status_logs',
             'activities',
             'leads',
             'customers',

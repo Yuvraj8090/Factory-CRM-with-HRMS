@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\Employee;
 use App\Models\PayrollItem;
 use App\Models\PayrollPeriod;
@@ -15,6 +16,8 @@ use Illuminate\View\View;
 
 class PayrollController extends Controller
 {
+    use BuildsDataTables;
+
     public function __construct(protected PayrollCalculator $payrollCalculator)
     {
         $this->authorizeResource(PayrollPeriod::class, 'payroll');
@@ -22,11 +25,28 @@ class PayrollController extends Controller
 
     public function index(Request $request): JsonResponse|View
     {
-        $payrolls = PayrollPeriod::with(['creator', 'approver'])
+        $query = PayrollPeriod::with(['creator', 'approver'])
             ->withCount('items')
             ->when($request->filled('year'), fn ($query) => $query->forYear($request->integer('year')))
-            ->latest('period_start')
-            ->paginate($request->integer('per_page', 12));
+            ->latest('period_start');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('name', fn (PayrollPeriod $payroll) => $this->recordLink(
+                    $payroll->name,
+                    route('hrms.payrolls.show', $payroll),
+                    [optional($payroll->payout_date)->format('d M Y') ?: 'Payout pending']
+                ))
+                ->addColumn('period_display', fn (PayrollPeriod $payroll) => e(optional($payroll->period_start)->format('d M Y') . ' to ' . optional($payroll->period_end)->format('d M Y')))
+                ->addColumn('employees_total', fn (PayrollPeriod $payroll) => e((string) $payroll->items_count))
+                ->addColumn('status_badge', fn (PayrollPeriod $payroll) => $this->statusBadge(ucfirst($payroll->status)))
+                ->addColumn('net_total_display', fn (PayrollPeriod $payroll) => e($this->money((float) $payroll->total_net)))
+                ->addColumn('actions', fn (PayrollPeriod $payroll) => $this->actionButtons(route('hrms.payrolls.show', $payroll), route('hrms.payrolls.edit', $payroll)))
+                ->rawColumns(['name', 'status_badge', 'actions'])
+                ->toJson();
+        }
+
+        $payrolls = (clone $query)->paginate($request->integer('per_page', 12));
 
         if (! $request->expectsJson()) {
             return view('payrolls.index', [

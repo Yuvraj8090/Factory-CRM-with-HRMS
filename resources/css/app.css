@@ -61,6 +61,49 @@
         border-color: #edf2f7;
     }
 
+    .dataTables_wrapper .dataTables_filter input,
+    .dataTables_wrapper .dataTables_length select {
+        border-radius: 0.5rem;
+        border: 1px solid #ced4da;
+        padding: 0.375rem 0.75rem;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        border-radius: 0.5rem !important;
+        margin: 0 0.125rem;
+    }
+
+    .app-workflow-step {
+        border: 1px solid #dee2e6;
+        border-radius: 1rem;
+        background: #fff;
+    }
+
+    .app-workflow-nav .btn {
+        text-align: left;
+        border-radius: 1rem;
+        padding: 0.9rem 1rem;
+    }
+
+    .app-workflow-progress {
+        height: 0.65rem;
+        border-radius: 999px;
+        background: #e9ecef;
+        overflow: hidden;
+    }
+
+    .app-workflow-progress-bar {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #0d6efd 0%, #20c997 100%);
+        transition: width 0.2s ease-in-out;
+    }
+
+    .app-tooltip-note {
+        color: #6c757d;
+        font-size: 0.8rem;
+    }
+
     .app-stat-grid {
         display: grid;
         gap: 1rem;

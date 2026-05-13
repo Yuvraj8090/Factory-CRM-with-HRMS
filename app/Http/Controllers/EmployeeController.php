@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\Department;
 use App\Models\Designation;
 use App\Models\Employee;
@@ -13,6 +14,8 @@ use Illuminate\View\View;
 
 class EmployeeController extends Controller
 {
+    use BuildsDataTables;
+
     public function __construct()
     {
         $this->authorizeResource(Employee::class, 'employee');
@@ -20,7 +23,7 @@ class EmployeeController extends Controller
 
     public function index(Request $request): JsonResponse|View
     {
-        $employees = Employee::with(['user', 'department', 'designation'])
+        $query = Employee::with(['user', 'department', 'designation'])
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->string('search')->toString();
 
@@ -34,8 +37,28 @@ class EmployeeController extends Controller
             })
             ->when($request->boolean('active_only'), fn ($query) => $query->active())
             ->when($request->filled('department_id'), fn ($query) => $query->where('department_id', $request->integer('department_id')))
-            ->orderBy('employee_code')
-            ->paginate($request->integer('per_page', 15));
+            ->orderBy('employee_code');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->addColumn('employee_name', fn (Employee $employee) => $this->recordLink(
+                    $employee->user?->name ?? 'Unknown user',
+                    route('hrms.employees.show', $employee),
+                    [
+                        $employee->employee_code,
+                        $employee->user?->email ?: 'No email',
+                    ]
+                ))
+                ->addColumn('department_name', fn (Employee $employee) => e($employee->department?->name ?: 'Unassigned'))
+                ->addColumn('designation_name', fn (Employee $employee) => e($employee->designation?->name ?: 'Unassigned'))
+                ->addColumn('joined_at', fn (Employee $employee) => e(optional($employee->date_of_joining)->format('d M Y')))
+                ->addColumn('salary_display', fn (Employee $employee) => e($this->money((float) $employee->salary)))
+                ->addColumn('actions', fn (Employee $employee) => $this->actionButtons(route('hrms.employees.show', $employee), route('hrms.employees.edit', $employee)))
+                ->rawColumns(['employee_name', 'actions'])
+                ->toJson();
+        }
+
+        $employees = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('employees.index', [

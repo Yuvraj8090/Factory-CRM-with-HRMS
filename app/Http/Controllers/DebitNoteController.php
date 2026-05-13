@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\BuildsDataTables;
 use App\Models\Customer;
 use App\Models\DebitNote;
 use App\Models\Invoice;
@@ -14,12 +15,31 @@ use Illuminate\View\View;
 
 class DebitNoteController extends Controller
 {
+    use BuildsDataTables;
+
     public function index(Request $request): JsonResponse|View
     {
-        $debitNotes = DebitNote::with(['customer', 'invoice', 'items.item', 'creator'])
+        $query = DebitNote::with(['customer', 'invoice', 'items.item', 'creator'])
             ->when($request->filled('status'), fn ($query) => $query->where('status', $request->string('status')))
-            ->latest('debit_note_date')
-            ->paginate($request->integer('per_page', 15));
+            ->latest('debit_note_date');
+
+        if ($this->isDataTableRequest($request)) {
+            return $this->dataTable($query)
+                ->editColumn('debit_note_number', fn (DebitNote $debitNote) => $this->recordLink(
+                    $debitNote->debit_note_number,
+                    route('finance.debit-notes.show', $debitNote),
+                    [optional($debitNote->debit_note_date)->format('d M Y')]
+                ))
+                ->addColumn('customer_name', fn (DebitNote $debitNote) => e($debitNote->customer?->name ?: 'Unknown customer'))
+                ->addColumn('invoice_number', fn (DebitNote $debitNote) => e($debitNote->invoice?->invoice_number ?: 'No linked invoice'))
+                ->addColumn('status_badge', fn (DebitNote $debitNote) => $this->statusBadge($debitNote->status ?: 'Open'))
+                ->addColumn('total_display', fn (DebitNote $debitNote) => e($this->money((float) $debitNote->total)))
+                ->addColumn('actions', fn (DebitNote $debitNote) => $this->actionButtons(route('finance.debit-notes.show', $debitNote), route('finance.debit-notes.edit', $debitNote)))
+                ->rawColumns(['debit_note_number', 'status_badge', 'actions'])
+                ->toJson();
+        }
+
+        $debitNotes = (clone $query)->paginate($request->integer('per_page', 15));
 
         if (! $request->expectsJson()) {
             return view('debit-notes.index', compact('debitNotes'));
