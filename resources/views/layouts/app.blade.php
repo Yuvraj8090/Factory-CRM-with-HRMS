@@ -29,7 +29,7 @@
         @stack('styles')
     </head>
     
-    <body class="bg-light text-sm" data-auth-user-id="{{ $user?->id }}">
+    <body class="bg-light text-sm" data-auth-user-id="{{ $userID }}">
         @php
             $navigation = [
                 'CRM' => [
@@ -64,6 +64,7 @@
 
             $user = auth()->user();
             $userName = $user?->name ?? 'User';
+            $userID = $user?->id ?? null;
             $userEmail = $user?->email ?? 'user@example.com';
             $initials = collect(explode(' ', $userName))
                 ->filter()
