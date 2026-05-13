@@ -27,6 +27,17 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @stack('styles')
+        @php
+             $user = auth()->user();
+            $userName = $user?->name ?? 'User';
+            $userID = $user?->id ?? null;
+            $userEmail = $user?->email ?? 'user@example.com';
+            $initials = collect(explode(' ', $userName))
+                ->filter()
+                ->map(fn (string $part) => strtoupper(substr($part, 0, 1)))
+                ->take(2)
+                ->implode('');
+        @endphp
     </head>
     
     <body class="bg-light text-sm" data-auth-user-id="{{ $userID }}">
