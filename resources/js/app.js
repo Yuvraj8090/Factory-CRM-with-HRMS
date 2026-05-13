@@ -3,12 +3,12 @@ import './bootstrap';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'admin-lte/dist/css/adminlte.min.css';
-import 'datatables.net-bs5/css/dataTables.bootstrap5.css';
+import 'datatables.net-bs4/css/dataTables.bootstrap4.css';
 
 import $ from 'jquery';
 import Popper from 'popper.js';
 import Alpine from 'alpinejs';
-import DataTable from 'datatables.net-bs5';
+import DataTable from 'datatables.net-bs4';
 
 window.$ = $;
 window.jQuery = $;
@@ -25,6 +25,8 @@ Alpine.start();
 DataTable(window, $);
 
 const APP_STORAGE_PREFIX = 'factory-crm';
+
+const getActiveUserScope = () => document.body?.dataset?.authUserId || 'guest';
 
 const storageHelpers = {
     buildKey(key) {
@@ -149,10 +151,16 @@ const initWorkflow = (container) => {
     const progressBar = container.querySelector('[data-workflow-progress]');
     const statusText = container.querySelector('[data-workflow-status]');
     const stepButtons = Array.from(container.querySelectorAll('[data-workflow-target]'));
+    const skipButtons = Array.from(container.querySelectorAll('[data-workflow-skip]'));
 
     if (!workflowKey || stepPanels.length === 0) {
         return;
     }
+
+    const userScope = getActiveUserScope();
+    const storageKey = `workflow.${userScope}.${workflowKey}`;
+    const seenKey = `workflow-seen.${userScope}.${workflowKey}`;
+    let hasSeenWorkflowThisSession = sessionStorage.getItem(seenKey) === 'true';
 
     const optionalSteps = new Set(
         stepPanels
@@ -160,7 +168,7 @@ const initWorkflow = (container) => {
             .map((panel) => panel.dataset.workflowStep)
     );
 
-    const savedState = storageHelpers.get(`workflow.${workflowKey}`, {});
+    const savedState = hasSeenWorkflowThisSession ? storageHelpers.get(storageKey, {}) : {};
     let activeStep = savedState.activeStep || stepPanels[0].dataset.workflowStep;
     const skippedSteps = new Set(savedState.skippedSteps || []);
 
@@ -194,7 +202,11 @@ const initWorkflow = (container) => {
             statusText.textContent = `Step ${index + 1} of ${stepPanels.length}`;
         }
 
-        storageHelpers.save(`workflow.${workflowKey}`, {
+        skipButtons.forEach((button) => {
+            button.classList.toggle('d-none', !hasSeenWorkflowThisSession);
+        });
+
+        storageHelpers.save(storageKey, {
             activeStep,
             skippedSteps: Array.from(skippedSteps),
         });
@@ -209,6 +221,8 @@ const initWorkflow = (container) => {
 
         if (target.dataset.workflowTarget) {
             activeStep = target.dataset.workflowTarget;
+            sessionStorage.setItem(seenKey, 'true');
+            hasSeenWorkflowThisSession = true;
             syncWorkflow();
             return;
         }
@@ -234,6 +248,8 @@ const initWorkflow = (container) => {
             }
         }
 
+        sessionStorage.setItem(seenKey, 'true');
+        hasSeenWorkflowThisSession = true;
         syncWorkflow();
     });
 
@@ -282,6 +298,7 @@ const initDataTable = (table) => {
         serverSide: true,
         responsive: true,
         searching: true,
+        pagingType: 'simple_numbers',
         order: [],
         ajax: {
             url: table.dataset.datatableUrl,
@@ -301,6 +318,10 @@ const initDataTable = (table) => {
         language: {
             emptyTable: 'No records matched the current filters.',
             zeroRecords: 'No matching records found.',
+            paginate: {
+                previous: 'Previous',
+                next: 'Next',
+            },
         },
     });
 

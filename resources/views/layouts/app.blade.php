@@ -29,7 +29,7 @@
         @stack('styles')
     </head>
     
-    <body class="bg-light text-sm">
+    <body class="bg-light text-sm" data-auth-user-id="{{ $user?->id }}">
         @php
             $navigation = [
                 'CRM' => [
