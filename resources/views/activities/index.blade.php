@@ -54,7 +54,7 @@
                 data-datatable-url="{{ route('crm.activities.index') }}"
                 data-datatable-filter-form="#activities-filters"
                 data-datatable-storage-key="activities"
-                data-datatable-columns='@json([
+                data-datatable-columns='{{ \Illuminate\Support\Js::from([
                     ["data" => "subject", "name" => "subject"],
                     ["data" => "lead_name", "name" => "lead.name", "searchable" => false],
                     ["data" => "type_name", "name" => "type.name", "searchable" => false],
@@ -62,7 +62,7 @@
                     ["data" => "owner_name", "name" => "assignedTo.name", "searchable" => false],
                     ["data" => "due_display", "name" => "due_date"],
                     ["data" => "actions", "name" => "id", "orderable" => false, "searchable" => false],
-                ])'
+                ]) }}'
             >
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                     <tr>

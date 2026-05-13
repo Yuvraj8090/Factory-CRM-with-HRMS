@@ -24,7 +24,7 @@
         </form>
 
         <div class="overflow-x-auto">
-            <table id="employees-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('hrms.employees.index') }}" data-datatable-filter-form="#employees-filters" data-datatable-storage-key="employees" data-datatable-columns='@json([["data"=>"employee_name","name"=>"user.name","searchable"=>false],["data"=>"department_name","name"=>"department.name","searchable"=>false],["data"=>"designation_name","name"=>"designation.name","searchable"=>false],["data"=>"joined_at","name"=>"date_of_joining"],["data"=>"salary_display","name"=>"salary"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
+            <table id="employees-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('hrms.employees.index') }}" data-datatable-filter-form="#employees-filters" data-datatable-storage-key="employees" data-datatable-columns='{{ \Illuminate\Support\Js::from([["data"=>"employee_name","name"=>"user.name","searchable"=>false],["data"=>"department_name","name"=>"department.name","searchable"=>false],["data"=>"designation_name","name"=>"designation.name","searchable"=>false],["data"=>"joined_at","name"=>"date_of_joining"],["data"=>"salary_display","name"=>"salary"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]]) }}'>
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                     <tr>
                         <th class="px-6 py-4">Employee</th>

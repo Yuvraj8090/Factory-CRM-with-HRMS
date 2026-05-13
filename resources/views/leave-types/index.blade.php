@@ -4,7 +4,7 @@
     </x-slot>
     <section class="app-card">
         <div class="overflow-x-auto">
-            <table id="leave-types-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('hrms.leave-types.index') }}" data-datatable-storage-key="leave-types" data-datatable-columns='@json([["data"=>"name","name"=>"name"],["data"=>"leave_days","name"=>"leave_days_per_year"],["data"=>"paid_status","name"=>"is_paid","orderable"=>false,"searchable"=>false],["data"=>"requests_total","name"=>"leave_requests_count"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
+            <table id="leave-types-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('hrms.leave-types.index') }}" data-datatable-storage-key="leave-types" data-datatable-columns='{{ \Illuminate\Support\Js::from([["data"=>"name","name"=>"name"],["data"=>"leave_days","name"=>"leave_days_per_year"],["data"=>"paid_status","name"=>"is_paid","orderable"=>false,"searchable"=>false],["data"=>"requests_total","name"=>"leave_requests_count"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]]) }}'>
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"><tr><th class="px-6 py-4">Leave Type</th><th class="px-6 py-4">Days Per Year</th><th class="px-6 py-4">Paid Status</th><th class="px-6 py-4">Requests</th><th class="px-6 py-4 text-right">Actions</th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($leaveTypes as $leaveType)

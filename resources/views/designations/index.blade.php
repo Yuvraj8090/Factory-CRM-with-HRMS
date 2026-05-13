@@ -4,7 +4,7 @@
     </x-slot>
     <section class="app-card">
         <div class="overflow-x-auto">
-            <table id="designations-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('hrms.designations.index') }}" data-datatable-storage-key="designations" data-datatable-columns='@json([["data"=>"name","name"=>"name"],["data"=>"department_name","name"=>"department.name","searchable"=>false],["data"=>"employees_total","name"=>"employees_count"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
+            <table id="designations-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('hrms.designations.index') }}" data-datatable-storage-key="designations" data-datatable-columns='{{ \Illuminate\Support\Js::from([["data"=>"name","name"=>"name"],["data"=>"department_name","name"=>"department.name","searchable"=>false],["data"=>"employees_total","name"=>"employees_count"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]]) }}'>
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"><tr><th class="px-6 py-4">Designation</th><th class="px-6 py-4">Department</th><th class="px-6 py-4">Employees</th><th class="px-6 py-4 text-right">Actions</th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($designations as $designation)

@@ -18,7 +18,7 @@
         </form>
 
         <div class="overflow-x-auto">
-            <table id="payrolls-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('hrms.payrolls.index') }}" data-datatable-filter-form="#payrolls-filters" data-datatable-storage-key="payrolls" data-datatable-columns='@json([["data"=>"name","name"=>"name"],["data"=>"period_display","name"=>"period_start"],["data"=>"employees_total","name"=>"items_count"],["data"=>"status_badge","name"=>"status","orderable"=>false,"searchable"=>false],["data"=>"net_total_display","name"=>"total_net"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
+            <table id="payrolls-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('hrms.payrolls.index') }}" data-datatable-filter-form="#payrolls-filters" data-datatable-storage-key="payrolls" data-datatable-columns='{{ \Illuminate\Support\Js::from([["data"=>"name","name"=>"name"],["data"=>"period_display","name"=>"period_start"],["data"=>"employees_total","name"=>"items_count"],["data"=>"status_badge","name"=>"status","orderable"=>false,"searchable"=>false],["data"=>"net_total_display","name"=>"total_net"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]]) }}'>
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"><tr><th class="px-6 py-4">Payroll Run</th><th class="px-6 py-4">Period</th><th class="px-6 py-4">Employees</th><th class="px-6 py-4">Status</th><th class="px-6 py-4">Net Total</th><th class="px-6 py-4 text-right">Actions</th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($payrolls as $payroll)

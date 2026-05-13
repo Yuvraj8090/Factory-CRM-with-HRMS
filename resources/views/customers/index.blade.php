@@ -40,7 +40,7 @@
             </form>
 
             <div class="overflow-x-auto">
-                <table id="customers-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('crm.customers.index') }}" data-datatable-filter-form="#customers-filters" data-datatable-storage-key="customers" data-datatable-columns='@json([["data"=>"name","name"=>"name"],["data"=>"customer_type_display","name"=>"customer_type"],["data"=>"status_badge","name"=>"status","orderable"=>false,"searchable"=>false],["data"=>"invoices_total","name"=>"invoices_count"],["data"=>"credit_limit_display","name"=>"credit_limit"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
+                <table id="customers-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('crm.customers.index') }}" data-datatable-filter-form="#customers-filters" data-datatable-storage-key="customers" data-datatable-columns='{{ \Illuminate\Support\Js::from([["data"=>"name","name"=>"name"],["data"=>"customer_type_display","name"=>"customer_type"],["data"=>"status_badge","name"=>"status","orderable"=>false,"searchable"=>false],["data"=>"invoices_total","name"=>"invoices_count"],["data"=>"credit_limit_display","name"=>"credit_limit"],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]]) }}'>
                     <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                         <tr>
                             <th class="px-6 py-4">Customer</th>

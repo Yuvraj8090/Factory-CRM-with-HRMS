@@ -48,7 +48,7 @@
             </div>
 
             <div class="overflow-x-auto">
-                <table id="leads-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('crm.leads.index') }}" data-datatable-storage-key="leads" data-datatable-columns='@json([["data"=>"name","name"=>"name"],["data"=>"stage_badge","name"=>"stage.name","orderable"=>false,"searchable"=>false],["data"=>"assigned_rep","name"=>"assignedTo.name","searchable"=>false],["data"=>"lead_source_display","name"=>"lead_source"],["data"=>"location_display","name"=>"city","searchable"=>false],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
+                <table id="leads-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('crm.leads.index') }}" data-datatable-storage-key="leads" data-datatable-columns='{{ \Illuminate\Support\Js::from([["data"=>"name","name"=>"name"],["data"=>"stage_badge","name"=>"stage.name","orderable"=>false,"searchable"=>false],["data"=>"assigned_rep","name"=>"assignedTo.name","searchable"=>false],["data"=>"lead_source_display","name"=>"lead_source"],["data"=>"location_display","name"=>"city","searchable"=>false],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]]) }}'>
                     <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
                         <tr>
                             <th class="px-6 py-4">Lead</th>

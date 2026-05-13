@@ -4,7 +4,7 @@
     </x-slot>
     <section class="app-card">
         <div class="overflow-x-auto">
-            <table id="whatsapp-templates-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('settings.whats-app-templates.index') }}" data-datatable-storage-key="whatsapp-templates" data-datatable-columns='@json([["data"=>"template_name","name"=>"template_name"],["data"=>"category_name","name"=>"category"],["data"=>"messages_total","name"=>"messages_count"],["data"=>"status_badge","name"=>"is_active","orderable"=>false,"searchable"=>false],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]])'>
+            <table id="whatsapp-templates-table" class="table table-hover app-data-table text-sm" data-datatable-url="{{ route('settings.whats-app-templates.index') }}" data-datatable-storage-key="whatsapp-templates" data-datatable-columns='{{ \Illuminate\Support\Js::from([["data"=>"template_name","name"=>"template_name"],["data"=>"category_name","name"=>"category"],["data"=>"messages_total","name"=>"messages_count"],["data"=>"status_badge","name"=>"is_active","orderable"=>false,"searchable"=>false],["data"=>"actions","name"=>"id","orderable"=>false,"searchable"=>false]]) }}'>
                 <thead class="bg-slate-50/80 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500"><tr><th class="px-6 py-4">Template</th><th class="px-6 py-4">Category</th><th class="px-6 py-4">Messages</th><th class="px-6 py-4">Status</th><th class="px-6 py-4 text-right">Actions</th></tr></thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($templates as $template)
